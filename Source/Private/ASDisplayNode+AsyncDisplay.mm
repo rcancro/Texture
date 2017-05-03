@@ -170,9 +170,9 @@
   // We always create a graphics context, unless a -display method is used, OR if we are a subnode drawing into a rasterized parent.
   BOOL shouldCreateGraphicsContext = (flags.implementsInstanceImageDisplay == NO && flags.implementsImageDisplay == NO && rasterizing == NO);
   BOOL shouldBeginRasterizing = (rasterizing == NO && flags.rasterizesSubtree);
-  BOOL usesInstanceMethodDisplay = (flags.implementsInstanceDrawRect || flags.implementsInstanceImageDisplay);
+  BOOL usesInstanceMethodDisplay = flags.implementsInstanceImageDisplay;
   BOOL usesImageDisplay = (flags.implementsImageDisplay || flags.implementsInstanceImageDisplay);
-  BOOL usesDrawRect = (flags.implementsDrawRect || flags.implementsInstanceDrawRect);
+  BOOL usesDrawRect = flags.implementsDrawRect;
   
   if (usesImageDisplay == NO && usesDrawRect == NO && shouldBeginRasterizing == NO) {
     // Early exit before requesting more expensive properties like bounds and opaque from the layer.
