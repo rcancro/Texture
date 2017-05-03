@@ -425,4 +425,14 @@ namespace ASDN {
 
 } // namespace ASDN
 
+// Helper for creating a unique::ptr. Starting available C++14
+
+namespace ASDN {
+  template<typename T, typename... Args>
+  std::unique_ptr<T> make_unique(Args&&... args)
+  {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+  }
+}
+
 #endif /* __cplusplus */
