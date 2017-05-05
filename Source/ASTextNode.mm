@@ -122,12 +122,10 @@ static ASTextKitRenderer *rendererForAttributes(ASTextKitAttributes attributes, 
 
 @interface ASTextNodeDrawParameter : NSObject {
   std::unique_ptr<ASTextKitAttributes> _rendererAttributes;
+@package
+  UIColor *_backgroundColor;
+  UIEdgeInsets _textContainerInsets;
 }
-@property (nonatomic, readonly, /*nullable*/) UIColor *backgroundColor;
-@property (nonatomic, readonly) UIEdgeInsets textContainerInsets;
-
-- (ASTextKitRenderer *)rendererForBounds:(CGRect)bounds;
-
 @end
 
 @implementation ASTextNodeDrawParameter
@@ -147,7 +145,7 @@ static ASTextKitRenderer *rendererForAttributes(ASTextKitAttributes attributes, 
 
 - (ASTextKitRenderer *)rendererForBounds:(CGRect)bounds
 {
-  CGRect rect = UIEdgeInsetsInsetRect(bounds, self.textContainerInsets);
+  CGRect rect = UIEdgeInsetsInsetRect(bounds, _textContainerInsets);
   return rendererForAttributes(*_rendererAttributes.get(), rect.size);
 }
 
@@ -508,8 +506,8 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
 + (void)drawRect:(CGRect)bounds withParameters:(id)parameters isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock isRasterizing:(BOOL)isRasterizing
 {
   ASTextNodeDrawParameter *drawParameter = (ASTextNodeDrawParameter *)parameters;
-  UIColor *backgroundColor = isRasterizing ? nil : drawParameter.backgroundColor;
-  UIEdgeInsets textContainerInsets = drawParameter.textContainerInsets;
+  UIColor *backgroundColor = isRasterizing ? nil : drawParameter->_backgroundColor;
+  UIEdgeInsets textContainerInsets = drawParameter->_textContainerInsets;
   ASTextKitRenderer *renderer = [drawParameter rendererForBounds:bounds];
   
   CGContextRef context = UIGraphicsGetCurrentContext();
