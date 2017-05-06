@@ -346,6 +346,28 @@
 		CC8B05D61D73836400F54286 /* ASPerformanceTestContext.m in Sources */ = {isa = PBXBuildFile; fileRef = CC8B05D51D73836400F54286 /* ASPerformanceTestContext.m */; };
 		CC8B05D81D73979700F54286 /* ASTextNodePerformanceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CC8B05D71D73979700F54286 /* ASTextNodePerformanceTests.m */; };
 		CC90E1F41E383C0400FED591 /* AsyncDisplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B35061DA1B010EDF0018CF92 /* AsyncDisplayKit.framework */; };
+		CC9ABFC61EBD67BE00FAF14E /* YYTextDebugOption.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABF931EBD67BE00FAF14E /* YYTextDebugOption.h */; };
+		CC9ABFC71EBD67BE00FAF14E /* YYTextDebugOption.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABF941EBD67BE00FAF14E /* YYTextDebugOption.m */; };
+		CC9ABFCE1EBD67BE00FAF14E /* YYTextLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABF9B1EBD67BE00FAF14E /* YYTextLayout.h */; };
+		CC9ABFCF1EBD67BE00FAF14E /* YYTextLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABF9C1EBD67BE00FAF14E /* YYTextLayout.m */; };
+		CC9ABFD01EBD67BE00FAF14E /* YYTextLine.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABF9D1EBD67BE00FAF14E /* YYTextLine.h */; };
+		CC9ABFD11EBD67BE00FAF14E /* YYTextLine.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABF9E1EBD67BE00FAF14E /* YYTextLine.m */; };
+		CC9ABFD61EBD67BE00FAF14E /* YYTextArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFA41EBD67BE00FAF14E /* YYTextArchiver.h */; };
+		CC9ABFD71EBD67BE00FAF14E /* YYTextArchiver.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFA51EBD67BE00FAF14E /* YYTextArchiver.m */; };
+		CC9ABFD81EBD67BE00FAF14E /* YYTextAttribute.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFA61EBD67BE00FAF14E /* YYTextAttribute.h */; };
+		CC9ABFD91EBD67BE00FAF14E /* YYTextAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFA71EBD67BE00FAF14E /* YYTextAttribute.m */; };
+		CC9ABFDA1EBD67BE00FAF14E /* YYTextParser.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFA81EBD67BE00FAF14E /* YYTextParser.h */; };
+		CC9ABFDB1EBD67BE00FAF14E /* YYTextParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFA91EBD67BE00FAF14E /* YYTextParser.m */; };
+		CC9ABFDC1EBD67BE00FAF14E /* YYTextRubyAnnotation.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFAA1EBD67BE00FAF14E /* YYTextRubyAnnotation.h */; };
+		CC9ABFDD1EBD67BE00FAF14E /* YYTextRubyAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFAB1EBD67BE00FAF14E /* YYTextRubyAnnotation.m */; };
+		CC9ABFDE1EBD67BE00FAF14E /* YYTextRunDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFAC1EBD67BE00FAF14E /* YYTextRunDelegate.h */; };
+		CC9ABFDF1EBD67BE00FAF14E /* YYTextRunDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFAD1EBD67BE00FAF14E /* YYTextRunDelegate.m */; };
+		CC9ABFE01EBD67BE00FAF14E /* NSAttributedString+YYText.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFAF1EBD67BE00FAF14E /* NSAttributedString+YYText.h */; };
+		CC9ABFE11EBD67BE00FAF14E /* NSAttributedString+YYText.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFB01EBD67BE00FAF14E /* NSAttributedString+YYText.m */; };
+		CC9ABFE21EBD67BE00FAF14E /* NSParagraphStyle+YYText.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFB11EBD67BE00FAF14E /* NSParagraphStyle+YYText.h */; };
+		CC9ABFE31EBD67BE00FAF14E /* NSParagraphStyle+YYText.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFB21EBD67BE00FAF14E /* NSParagraphStyle+YYText.m */; };
+		CC9ABFEC1EBD67BE00FAF14E /* YYTextUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9ABFBB1EBD67BE00FAF14E /* YYTextUtilities.h */; };
+		CC9ABFED1EBD67BE00FAF14E /* YYTextUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABFBC1EBD67BE00FAF14E /* YYTextUtilities.m */; };
 		CCA221D31D6FA7EF00AF6A0F /* ASViewControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CCA221D21D6FA7EF00AF6A0F /* ASViewControllerTests.m */; };
 		CCA282B41E9EA7310037E8B7 /* ASTipsController.h in Headers */ = {isa = PBXBuildFile; fileRef = CCA282B21E9EA7310037E8B7 /* ASTipsController.h */; };
 		CCA282B51E9EA7310037E8B7 /* ASTipsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCA282B31E9EA7310037E8B7 /* ASTipsController.m */; };
@@ -363,8 +385,11 @@
 		CCA282CD1E9EB73E0037E8B7 /* ASTipNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CCA282CB1E9EB73E0037E8B7 /* ASTipNode.m */; };
 		CCA282D01E9EBF6C0037E8B7 /* ASTipsWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = CCA282CE1E9EBF6C0037E8B7 /* ASTipsWindow.h */; };
 		CCA282D11E9EBF6C0037E8B7 /* ASTipsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CCA282CF1E9EBF6C0037E8B7 /* ASTipsWindow.m */; };
+		CCAF6A841EBE4DC000085303 /* YYTextInput.m in Sources */ = {isa = PBXBuildFile; fileRef = CC9ABF981EBD67BE00FAF14E /* YYTextInput.m */; };
 		CCB2F34D1D63CCC6004E6DE9 /* ASDisplayNodeSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CCB2F34C1D63CCC6004E6DE9 /* ASDisplayNodeSnapshotTests.m */; };
 		CCBBBF5D1EB161760069AA91 /* ASRangeManagingNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCBBBF5C1EB161760069AA91 /* ASRangeManagingNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CCD523111EBD658C001F2191 /* ASTextNode2.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD5230F1EBD658C001F2191 /* ASTextNode2.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CCD523121EBD658C001F2191 /* ASTextNode2.mm in Sources */ = {isa = PBXBuildFile; fileRef = CCD523101EBD658C001F2191 /* ASTextNode2.mm */; };
 		CCF18FF41D2575E300DF5895 /* NSIndexSet+ASHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CC4981BA1D1C7F65004E13CC /* NSIndexSet+ASHelpers.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DB55C2671C641AE4004EDCF5 /* ASContextTransitioning.h in Headers */ = {isa = PBXBuildFile; fileRef = DB55C2651C641AE4004EDCF5 /* ASContextTransitioning.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB7121BCD50849C498C886FB /* libPods-AsyncDisplayKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFA731F0396842FF8AB635EE /* libPods-AsyncDisplayKitTests.a */; };
@@ -775,6 +800,30 @@
 		CC8B05D41D73836400F54286 /* ASPerformanceTestContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASPerformanceTestContext.h; sourceTree = "<group>"; };
 		CC8B05D51D73836400F54286 /* ASPerformanceTestContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASPerformanceTestContext.m; sourceTree = "<group>"; };
 		CC8B05D71D73979700F54286 /* ASTextNodePerformanceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASTextNodePerformanceTests.m; sourceTree = "<group>"; };
+		CC9ABF931EBD67BE00FAF14E /* YYTextDebugOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextDebugOption.h; sourceTree = "<group>"; };
+		CC9ABF941EBD67BE00FAF14E /* YYTextDebugOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextDebugOption.m; sourceTree = "<group>"; };
+		CC9ABF971EBD67BE00FAF14E /* YYTextInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextInput.h; sourceTree = "<group>"; };
+		CC9ABF981EBD67BE00FAF14E /* YYTextInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextInput.m; sourceTree = "<group>"; };
+		CC9ABF9B1EBD67BE00FAF14E /* YYTextLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextLayout.h; sourceTree = "<group>"; };
+		CC9ABF9C1EBD67BE00FAF14E /* YYTextLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextLayout.m; sourceTree = "<group>"; };
+		CC9ABF9D1EBD67BE00FAF14E /* YYTextLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextLine.h; sourceTree = "<group>"; };
+		CC9ABF9E1EBD67BE00FAF14E /* YYTextLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextLine.m; sourceTree = "<group>"; };
+		CC9ABFA41EBD67BE00FAF14E /* YYTextArchiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextArchiver.h; sourceTree = "<group>"; };
+		CC9ABFA51EBD67BE00FAF14E /* YYTextArchiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextArchiver.m; sourceTree = "<group>"; };
+		CC9ABFA61EBD67BE00FAF14E /* YYTextAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextAttribute.h; sourceTree = "<group>"; };
+		CC9ABFA71EBD67BE00FAF14E /* YYTextAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextAttribute.m; sourceTree = "<group>"; };
+		CC9ABFA81EBD67BE00FAF14E /* YYTextParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextParser.h; sourceTree = "<group>"; };
+		CC9ABFA91EBD67BE00FAF14E /* YYTextParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextParser.m; sourceTree = "<group>"; };
+		CC9ABFAA1EBD67BE00FAF14E /* YYTextRubyAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextRubyAnnotation.h; sourceTree = "<group>"; };
+		CC9ABFAB1EBD67BE00FAF14E /* YYTextRubyAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextRubyAnnotation.m; sourceTree = "<group>"; };
+		CC9ABFAC1EBD67BE00FAF14E /* YYTextRunDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextRunDelegate.h; sourceTree = "<group>"; };
+		CC9ABFAD1EBD67BE00FAF14E /* YYTextRunDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextRunDelegate.m; sourceTree = "<group>"; };
+		CC9ABFAF1EBD67BE00FAF14E /* NSAttributedString+YYText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+YYText.h"; sourceTree = "<group>"; };
+		CC9ABFB01EBD67BE00FAF14E /* NSAttributedString+YYText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+YYText.m"; sourceTree = "<group>"; };
+		CC9ABFB11EBD67BE00FAF14E /* NSParagraphStyle+YYText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSParagraphStyle+YYText.h"; sourceTree = "<group>"; };
+		CC9ABFB21EBD67BE00FAF14E /* NSParagraphStyle+YYText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSParagraphStyle+YYText.m"; sourceTree = "<group>"; };
+		CC9ABFBB1EBD67BE00FAF14E /* YYTextUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYTextUtilities.h; sourceTree = "<group>"; };
+		CC9ABFBC1EBD67BE00FAF14E /* YYTextUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYTextUtilities.m; sourceTree = "<group>"; };
 		CCA221D21D6FA7EF00AF6A0F /* ASViewControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASViewControllerTests.m; sourceTree = "<group>"; };
 		CCA282B21E9EA7310037E8B7 /* ASTipsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTipsController.h; sourceTree = "<group>"; };
 		CCA282B31E9EA7310037E8B7 /* ASTipsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASTipsController.m; sourceTree = "<group>"; };
@@ -796,6 +845,8 @@
 		CCBBBF5C1EB161760069AA91 /* ASRangeManagingNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASRangeManagingNode.h; sourceTree = "<group>"; };
 		CCBD05DE1E4147B000D18509 /* ASIGListAdapterBasedDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIGListAdapterBasedDataSource.m; sourceTree = "<group>"; };
 		CCBD05DF1E4147B000D18509 /* ASIGListAdapterBasedDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIGListAdapterBasedDataSource.h; sourceTree = "<group>"; };
+		CCD5230F1EBD658C001F2191 /* ASTextNode2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTextNode2.h; sourceTree = "<group>"; };
+		CCD523101EBD658C001F2191 /* ASTextNode2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASTextNode2.mm; sourceTree = "<group>"; };
 		CCE04B1E1E313EA7006AEBBB /* ASSectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASSectionController.h; sourceTree = "<group>"; };
 		CCE04B201E313EB9006AEBBB /* IGListAdapter+AsyncDisplayKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "IGListAdapter+AsyncDisplayKit.h"; sourceTree = "<group>"; };
 		CCE04B211E313EB9006AEBBB /* IGListAdapter+AsyncDisplayKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "IGListAdapter+AsyncDisplayKit.m"; sourceTree = "<group>"; };
@@ -1220,6 +1271,9 @@
 		058D0A01195D050800B7D73C /* Private */ = {
 			isa = PBXGroup;
 			children = (
+				CCD5230F1EBD658C001F2191 /* ASTextNode2.h */,
+				CCD523101EBD658C001F2191 /* ASTextNode2.mm */,
+				CC9ABF8F1EBD67BE00FAF14E /* YYText */,
 				CCA282CE1E9EBF6C0037E8B7 /* ASTipsWindow.h */,
 				CCA282CF1E9EBF6C0037E8B7 /* ASTipsWindow.m */,
 				CCA282C61E9EB64B0037E8B7 /* ASDisplayNodeTipState.h */,
@@ -1432,6 +1486,61 @@
 			path = Layout;
 			sourceTree = "<group>";
 		};
+		CC9ABF8F1EBD67BE00FAF14E /* YYText */ = {
+			isa = PBXGroup;
+			children = (
+				CC9ABF901EBD67BE00FAF14E /* Component */,
+				CC9ABFA31EBD67BE00FAF14E /* String */,
+				CC9ABFAE1EBD67BE00FAF14E /* Utility */,
+			);
+			path = YYText;
+			sourceTree = "<group>";
+		};
+		CC9ABF901EBD67BE00FAF14E /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				CC9ABF931EBD67BE00FAF14E /* YYTextDebugOption.h */,
+				CC9ABF941EBD67BE00FAF14E /* YYTextDebugOption.m */,
+				CC9ABF971EBD67BE00FAF14E /* YYTextInput.h */,
+				CC9ABF981EBD67BE00FAF14E /* YYTextInput.m */,
+				CC9ABF9B1EBD67BE00FAF14E /* YYTextLayout.h */,
+				CC9ABF9C1EBD67BE00FAF14E /* YYTextLayout.m */,
+				CC9ABF9D1EBD67BE00FAF14E /* YYTextLine.h */,
+				CC9ABF9E1EBD67BE00FAF14E /* YYTextLine.m */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
+		CC9ABFA31EBD67BE00FAF14E /* String */ = {
+			isa = PBXGroup;
+			children = (
+				CC9ABFA41EBD67BE00FAF14E /* YYTextArchiver.h */,
+				CC9ABFA51EBD67BE00FAF14E /* YYTextArchiver.m */,
+				CC9ABFA61EBD67BE00FAF14E /* YYTextAttribute.h */,
+				CC9ABFA71EBD67BE00FAF14E /* YYTextAttribute.m */,
+				CC9ABFA81EBD67BE00FAF14E /* YYTextParser.h */,
+				CC9ABFA91EBD67BE00FAF14E /* YYTextParser.m */,
+				CC9ABFAA1EBD67BE00FAF14E /* YYTextRubyAnnotation.h */,
+				CC9ABFAB1EBD67BE00FAF14E /* YYTextRubyAnnotation.m */,
+				CC9ABFAC1EBD67BE00FAF14E /* YYTextRunDelegate.h */,
+				CC9ABFAD1EBD67BE00FAF14E /* YYTextRunDelegate.m */,
+			);
+			path = String;
+			sourceTree = "<group>";
+		};
+		CC9ABFAE1EBD67BE00FAF14E /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				CC9ABFAF1EBD67BE00FAF14E /* NSAttributedString+YYText.h */,
+				CC9ABFB01EBD67BE00FAF14E /* NSAttributedString+YYText.m */,
+				CC9ABFB11EBD67BE00FAF14E /* NSParagraphStyle+YYText.h */,
+				CC9ABFB21EBD67BE00FAF14E /* NSParagraphStyle+YYText.m */,
+				CC9ABFBB1EBD67BE00FAF14E /* YYTextUtilities.h */,
+				CC9ABFBC1EBD67BE00FAF14E /* YYTextUtilities.m */,
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
 		CCE04B1D1E313E99006AEBBB /* Collection Data Adapter */ = {
 			isa = PBXGroup;
 			children = (
@@ -1524,12 +1633,15 @@
 				B350623C1B010EFD0018CF92 /* _ASAsyncTransaction.h in Headers */,
 				68355B411CB57A6C001D4E68 /* ASImageContainerProtocolCategories.h in Headers */,
 				7630FFA81C9E267E007A7C0E /* ASVideoNode.h in Headers */,
+				CC9ABFE01EBD67BE00FAF14E /* NSAttributedString+YYText.h in Headers */,
 				B350623F1B010EFD0018CF92 /* _ASAsyncTransactionContainer.h in Headers */,
 				B13CA1011C52004900E031AB /* ASCollectionNode+Beta.h in Headers */,
 				68C215581DE10D330019C4BC /* ASCollectionViewLayoutInspector.h in Headers */,
 				B35062411B010EFD0018CF92 /* _ASAsyncTransactionGroup.h in Headers */,
+				CCD523111EBD658C001F2191 /* ASTextNode2.h in Headers */,
 				B350620F1B010EFD0018CF92 /* _ASDisplayLayer.h in Headers */,
 				B35062111B010EFD0018CF92 /* _ASDisplayView.h in Headers */,
+				CC9ABFCE1EBD67BE00FAF14E /* YYTextLayout.h in Headers */,
 				9C55866C1BD54A3000B50E3A /* ASAsciiArtBoxCreator.h in Headers */,
 				509E68611B3AEDA0009B9150 /* ASAbstractLayoutController.h in Headers */,
 				CCA282B81E9EA8E40037E8B7 /* AsyncDisplayKit+Tips.h in Headers */,
@@ -1580,6 +1692,7 @@
 				34EFC7691B701CE100AD841F /* ASLayoutElement.h in Headers */,
 				698DFF471E36B7E9002891F1 /* ASLayoutSpecUtilities.h in Headers */,
 				9C70F20D1CDBE9CB007D6C76 /* ASDefaultPlayButton.h in Headers */,
+				CC9ABFDA1EBD67BE00FAF14E /* YYTextParser.h in Headers */,
 				DE7EF4F81DFF77720082B84A /* ASDisplayNode+FrameworkSubclasses.h in Headers */,
 				CC034A091E60BEB400626263 /* ASDisplayNode+Convenience.h in Headers */,
 				254C6B7E1BF94DF4003EC431 /* ASTextKitTailTruncater.h in Headers */,
@@ -1599,6 +1712,7 @@
 				254C6B7C1BF94DF4003EC431 /* ASTextKitRenderer+TextChecking.h in Headers */,
 				68AF37DB1CBEF4D80077BF76 /* ASImageNode+AnimatedImagePrivate.h in Headers */,
 				B35062461B010EFD0018CF92 /* ASBasicImageDownloaderInternal.h in Headers */,
+				CC9ABFD81EBD67BE00FAF14E /* YYTextAttribute.h in Headers */,
 				044285081BAA63FE00D16268 /* ASBatchFetching.h in Headers */,
 				AC026B701BD57DBF00BBC17E /* _ASHierarchyChangeSet.h in Headers */,
 				CC87BB951DA8193C0090E380 /* ASCellNode+Internal.h in Headers */,
@@ -1616,10 +1730,12 @@
 				AC7A2C181BDE11DF0093FE1A /* ASTableViewInternal.h in Headers */,
 				B35062531B010EFD0018CF92 /* ASImageNode+CGExtras.h in Headers */,
 				E58E9E491E941DA5004CFC59 /* ASCollectionLayout.h in Headers */,
+				CC9ABFE21EBD67BE00FAF14E /* NSParagraphStyle+YYText.h in Headers */,
 				254C6B7F1BF94DF4003EC431 /* ASTextKitTruncating.h in Headers */,
 				CC58AA4B1E398E1D002C8CB4 /* ASBlockTypes.h in Headers */,
 				CCA282BC1E9EABDD0037E8B7 /* ASTipProvider.h in Headers */,
 				6977965F1D8AC8D3007E93D7 /* ASLayoutSpec+Subclasses.h in Headers */,
+				CC9ABFDC1EBD67BE00FAF14E /* YYTextRubyAnnotation.h in Headers */,
 				692BE8D71E36B65B00C86D87 /* ASLayoutSpecPrivate.h in Headers */,
 				34EFC75D1B701BE900AD841F /* ASInternalHelpers.h in Headers */,
 				E5B5B9D11E9BAD9800A6B726 /* ASCollectionLayoutContext+Private.h in Headers */,
@@ -1650,8 +1766,10 @@
 				B35062201B010EFD0018CF92 /* ASLayoutController.h in Headers */,
 				B35062211B010EFD0018CF92 /* ASLayoutRangeType.h in Headers */,
 				CC2F65EE1E5FFB1600DA57C9 /* ASMutableElementMap.h in Headers */,
+				CC9ABFC61EBD67BE00FAF14E /* YYTextDebugOption.h in Headers */,
 				34EFC76A1B701CE600AD841F /* ASLayoutSpec.h in Headers */,
 				CCA282D01E9EBF6C0037E8B7 /* ASTipsWindow.h in Headers */,
+				CC9ABFD01EBD67BE00FAF14E /* YYTextLine.h in Headers */,
 				B350625C1B010F070018CF92 /* ASLog.h in Headers */,
 				CC3B208A1C3F7A5400798563 /* ASWeakSet.h in Headers */,
 				B35062041B010EFD0018CF92 /* ASMultiplexImageNode.h in Headers */,
@@ -1661,6 +1779,7 @@
 				B35062061B010EFD0018CF92 /* ASNetworkImageNode.h in Headers */,
 				CCA282C81E9EB64B0037E8B7 /* ASDisplayNodeTipState.h in Headers */,
 				34EFC76C1B701CED00AD841F /* ASOverlayLayoutSpec.h in Headers */,
+				CC9ABFEC1EBD67BE00FAF14E /* YYTextUtilities.h in Headers */,
 				E5ABAC7B1E8564EE007AC15C /* ASRectTable.h in Headers */,
 				B35062261B010EFD0018CF92 /* ASRangeController.h in Headers */,
 				34EFC76E1B701CF400AD841F /* ASRatioLayoutSpec.h in Headers */,
@@ -1675,6 +1794,7 @@
 				25E327571C16819500A2170C /* ASPagerNode.h in Headers */,
 				9C70F20E1CDBE9E5007D6C76 /* NSArray+Diffing.h in Headers */,
 				9C49C3701B853961000B0DD5 /* ASStackLayoutElement.h in Headers */,
+				CC9ABFD61EBD67BE00FAF14E /* YYTextArchiver.h in Headers */,
 				34EFC7701B701CFA00AD841F /* ASStackLayoutDefines.h in Headers */,
 				CC0F885C1E42807F00576FED /* ASCollectionViewFlowLayoutInspector.h in Headers */,
 				764D83D51C8EA515009B4FB8 /* AsyncDisplayKit+Debug.h in Headers */,
@@ -1692,6 +1812,7 @@
 				B350620D1B010EFD0018CF92 /* ASTextNode.h in Headers */,
 				B35062391B010EFD0018CF92 /* ASThread.h in Headers */,
 				2C107F5B1BA9F54500F13DE5 /* AsyncDisplayKit.h in Headers */,
+				CC9ABFDE1EBD67BE00FAF14E /* YYTextRunDelegate.h in Headers */,
 				509E68651B3AEDC5009B9150 /* CoreGraphics+ASConvenience.h in Headers */,
 				B350623A1B010EFD0018CF92 /* NSMutableAttributedString+TextKitAdditions.h in Headers */,
 				044284FF1BAA3BD600D16268 /* UICollectionViewLayout+ASConvenience.h in Headers */,
@@ -1956,6 +2077,7 @@
 				9F98C0261DBE29E000476D92 /* ASControlTargetAction.m in Sources */,
 				9C70F2091CDABA36007D6C76 /* ASViewController.mm in Sources */,
 				3917EBD51E9C2FC400D04A01 /* _ASCollectionReusableView.m in Sources */,
+				CC9ABFD11EBD67BE00FAF14E /* YYTextLine.m in Sources */,
 				CCA282D11E9EBF6C0037E8B7 /* ASTipsWindow.m in Sources */,
 				8BBBAB8D1CEBAF1E00107FC6 /* ASDefaultPlaybackButton.m in Sources */,
 				B30BF6541C59D889004FCD53 /* ASLayoutManager.m in Sources */,
@@ -1975,8 +2097,10 @@
 				B35062101B010EFD0018CF92 /* _ASDisplayLayer.mm in Sources */,
 				9C55866B1BD54A1900B50E3A /* ASAsciiArtBoxCreator.m in Sources */,
 				B35062121B010EFD0018CF92 /* _ASDisplayView.mm in Sources */,
+				CC9ABFED1EBD67BE00FAF14E /* YYTextUtilities.m in Sources */,
 				DEFAD8131CC48914000527C4 /* ASVideoNode.mm in Sources */,
 				CCA282C11E9EAE010037E8B7 /* ASTip.m in Sources */,
+				CC9ABFE31EBD67BE00FAF14E /* NSParagraphStyle+YYText.m in Sources */,
 				B350624C1B010EFD0018CF92 /* _ASPendingState.mm in Sources */,
 				698371DC1E4379CD00437585 /* ASNodeController+Beta.m in Sources */,
 				CC6AA2DB1E9F03B900978E87 /* ASDisplayNode+Ancestry.m in Sources */,
@@ -1989,6 +2113,7 @@
 				34EFC7621B701CA400AD841F /* ASBackgroundLayoutSpec.mm in Sources */,
 				DE8BEAC41C2DF3FC00D57C12 /* ASDelegateProxy.m in Sources */,
 				B35062141B010EFD0018CF92 /* ASBasicImageDownloader.mm in Sources */,
+				CC9ABFDB1EBD67BE00FAF14E /* YYTextParser.m in Sources */,
 				B35062161B010EFD0018CF92 /* ASBatchContext.mm in Sources */,
 				AC47D9421B3B891B00AAEE9D /* ASCellNode.mm in Sources */,
 				E58E9E451E941D74004CFC59 /* ASCollectionLayoutContext.mm in Sources */,
@@ -1998,6 +2123,7 @@
 				68FC85EC1CE29C7D00EDD713 /* ASVisibilityProtocols.m in Sources */,
 				CC55A7121E52A0F200594372 /* ASResponderChainEnumerator.m in Sources */,
 				68B8A4E41CBDB958007E4543 /* ASWeakProxy.m in Sources */,
+				CC9ABFCF1EBD67BE00FAF14E /* YYTextLayout.m in Sources */,
 				9C70F20A1CDBE949007D6C76 /* ASTableNode.mm in Sources */,
 				69CB62AE1CB8165900024920 /* _ASDisplayViewAccessiblity.mm in Sources */,
 				B35061F61B010EFD0018CF92 /* ASCollectionView.mm in Sources */,
@@ -2011,6 +2137,7 @@
 				B350624E1B010EFD0018CF92 /* ASDisplayNode+AsyncDisplay.mm in Sources */,
 				25E327591C16819500A2170C /* ASPagerNode.m in Sources */,
 				636EA1A41C7FF4EC00EE152F /* NSArray+Diffing.m in Sources */,
+				CCD523121EBD658C001F2191 /* ASTextNode2.mm in Sources */,
 				B35062501B010EFD0018CF92 /* ASDisplayNode+DebugTiming.mm in Sources */,
 				DEC146B91C37A16A004A0EE7 /* ASCollectionInternal.m in Sources */,
 				254C6B891BF94F8A003EC431 /* ASTextKitRenderer+Positioning.mm in Sources */,
@@ -2024,6 +2151,7 @@
 				254C6B881BF94F8A003EC431 /* ASTextKitRenderer.mm in Sources */,
 				CC3B208C1C3F7A5400798563 /* ASWeakSet.m in Sources */,
 				B350621C1B010EFD0018CF92 /* ASTableLayoutController.m in Sources */,
+				CC9ABFD71EBD67BE00FAF14E /* YYTextArchiver.m in Sources */,
 				B350621E1B010EFD0018CF92 /* ASHighlightOverlayLayer.mm in Sources */,
 				9CC606651D24DF9E006581A0 /* NSIndexSet+ASHelpers.m in Sources */,
 				CC0F885F1E4280B800576FED /* _ASCollectionViewCell.m in Sources */,
@@ -2031,6 +2159,7 @@
 				B35062541B010EFD0018CF92 /* ASImageNode+CGExtras.m in Sources */,
 				E58E9E4A1E941DA5004CFC59 /* ASCollectionLayout.mm in Sources */,
 				6947B0C01E36B4E30007C478 /* ASStackUnpositionedLayout.mm in Sources */,
+				CC9ABFC71EBD67BE00FAF14E /* YYTextDebugOption.m in Sources */,
 				68355B401CB57A69001D4E68 /* ASImageContainerProtocolCategories.m in Sources */,
 				B35062031B010EFD0018CF92 /* ASImageNode.mm in Sources */,
 				254C6B821BF94F8A003EC431 /* ASTextKitComponents.mm in Sources */,
@@ -2046,16 +2175,20 @@
 				6907C25A1DC4ECFE00374C66 /* ASObjectDescriptionHelpers.m in Sources */,
 				B35062051B010EFD0018CF92 /* ASMultiplexImageNode.mm in Sources */,
 				B35062251B010EFD0018CF92 /* ASMutableAttributedStringBuilder.m in Sources */,
+				CCAF6A841EBE4DC000085303 /* YYTextInput.m in Sources */,
 				B35062071B010EFD0018CF92 /* ASNetworkImageNode.mm in Sources */,
 				34EFC76D1B701CF100AD841F /* ASOverlayLayoutSpec.mm in Sources */,
+				CC9ABFDD1EBD67BE00FAF14E /* YYTextRubyAnnotation.m in Sources */,
 				044285101BAA64EC00D16268 /* ASTwoDimensionalArrayUtils.m in Sources */,
 				CCA282B51E9EA7310037E8B7 /* ASTipsController.m in Sources */,
 				B35062271B010EFD0018CF92 /* ASRangeController.mm in Sources */,
 				0442850A1BAA63FE00D16268 /* ASBatchFetching.m in Sources */,
+				CC9ABFE11EBD67BE00FAF14E /* NSAttributedString+YYText.m in Sources */,
 				68FC85E61CE29B9400EDD713 /* ASNavigationController.m in Sources */,
 				CC4C2A791D88E3BF0039ACAB /* ASTraceEvent.m in Sources */,
 				34EFC76F1B701CF700AD841F /* ASRatioLayoutSpec.mm in Sources */,
 				254C6B8B1BF94F8A003EC431 /* ASTextKitShadower.mm in Sources */,
+				CC9ABFD91EBD67BE00FAF14E /* YYTextAttribute.m in Sources */,
 				254C6B851BF94F8A003EC431 /* ASTextKitAttributes.mm in Sources */,
 				90FC784F1E4BFE1B00383C5A /* ASDisplayNode+Yoga.mm in Sources */,
 				E5ABAC7C1E8564EE007AC15C /* ASRectTable.m in Sources */,
@@ -2084,6 +2217,7 @@
 				CC034A141E649F1300626263 /* AsyncDisplayKit+IGListKitMethods.m in Sources */,
 				509E68661B3AEDD7009B9150 /* CoreGraphics+ASConvenience.m in Sources */,
 				254C6B871BF94F8A003EC431 /* ASTextKitEntityAttribute.m in Sources */,
+				CC9ABFDF1EBD67BE00FAF14E /* YYTextRunDelegate.m in Sources */,
 				34566CB31BC1213700715E6B /* ASPhotosFrameworkImageRequest.m in Sources */,
 				254C6B831BF94F8A003EC431 /* ASTextKitCoreTextAdditions.m in Sources */,
 				CC55A70E1E529FA200594372 /* UIResponder+AsyncDisplayKit.m in Sources */,
