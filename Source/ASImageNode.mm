@@ -328,8 +328,7 @@
   ASImageNodeDrawParameters *drawParameter = params;
   UIImage *image = drawParameter->_image;
   if (image == nil) {
-    //return nil;
-      return;
+    return;
   }
   
   CGRect drawParameterBounds       = drawParameter->_bounds;
@@ -338,11 +337,12 @@
   UIViewContentMode contentMode    = drawParameter->_contentMode;
   CGFloat contentsScale            = drawParameter->_contentsScale;
   CGRect cropDisplayBounds         = drawParameter->_cropDisplayBounds;
+  CGRect cropRect                  = drawParameter->_cropRect;
+  BOOL forceUpscaling              = drawParameter->_forceUpscaling;
 
   
   BOOL hasValidCropBounds = cropEnabled && !CGRectIsEmpty(cropDisplayBounds);
   CGRect bounds = (hasValidCropBounds ? cropDisplayBounds : drawParameterBounds);
-  
   
   ASDisplayNodeAssert(contentsScale > 0, @"invalid contentsScale at display time");
   
@@ -362,9 +362,8 @@
   
   if (boundsSizeInPixels.width * contentsScale < 1.0f || boundsSizeInPixels.height * contentsScale < 1.0f ||
       imageSizeInPixels.width < 1.0f                  || imageSizeInPixels.height < 1.0f) {
-    // TODO:??
+    // Don't add the cache key if the size is not valid
     return;
-      
   }
   
   
@@ -379,7 +378,14 @@
       forcedSize.height *= contentsScale;
     }
       
-    // TODO: Needs to calculate the new final backgind size without cropping the actual image
+    ASCroppedImageBackingSizeAndDrawRectInBounds(imageSizeInPixels,
+                                                 boundsSizeInPixels,
+                                                 contentMode,
+                                                 cropRect,
+                                                 forceUpscaling,
+                                                 forcedSize,
+                                                 &backingSize,
+                                                 &imageDrawRect);
   }
   
   // Add cache key
@@ -413,26 +419,18 @@
     return nil;
   }
   
-  CGRect drawParameterBounds       = drawParameter->_bounds;
-  BOOL forceUpscaling              = drawParameter->_forceUpscaling;
-  CGSize forcedSize                = drawParameter->_forcedSize;
-  BOOL cropEnabled                 = drawParameter->_cropEnabled;
-//  BOOL isOpaque                    = drawParameter->_opaque;
-//  UIColor *backgroundColor         = drawParameter->_backgroundColor;
-  UIViewContentMode contentMode    = drawParameter->_contentMode;
-  CGFloat contentsScale            = drawParameter->_contentsScale;
-  CGRect cropDisplayBounds         = drawParameter->_cropDisplayBounds;
-  CGRect cropRect                  = drawParameter->_cropRect;
+  //CGRect drawParameterBounds       = drawParameter->_bounds;
+  //BOOL cropEnabled                 = drawParameter->_cropEnabled;
+  //CGFloat contentsScale            = drawParameter->_contentsScale;
+  //CGRect cropDisplayBounds         = drawParameter->_cropDisplayBounds;
   asimagenode_modification_block_t imageModificationBlock                 = drawParameter->_imageModificationBlock;
-//  ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext = drawParameter->_willDisplayNodeContentWithRenderingContext;
-//  ASDisplayNodeContextModifier didDisplayNodeContentWithRenderingContext  = drawParameter->_didDisplayNodeContentWithRenderingContext;
 
   
-  BOOL hasValidCropBounds = cropEnabled && !CGRectIsEmpty(cropDisplayBounds);
-  CGRect bounds = (hasValidCropBounds ? cropDisplayBounds : drawParameterBounds);
+  //BOOL hasValidCropBounds = cropEnabled && !CGRectIsEmpty(cropDisplayBounds);
+  //CGRect bounds = (hasValidCropBounds ? cropDisplayBounds : drawParameterBounds);
   
   
-  ASDisplayNodeAssert(contentsScale > 0, @"invalid contentsScale at display time");
+  //ASDisplayNodeAssert(contentsScale > 0, @"invalid contentsScale at display time");
   
   // if the image is resizable, bail early since the image has likely already been configured
   BOOL stretchable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
@@ -443,45 +441,10 @@
     return image;
   }
   
-  CGSize imageSize = image.size;
-  CGSize imageSizeInPixels = CGSizeMake(imageSize.width * image.scale, imageSize.height * image.scale);
-  CGSize boundsSizeInPixels = CGSizeMake(std::floor(bounds.size.width * contentsScale), std::floor(bounds.size.height * contentsScale));
-  
-  BOOL contentModeSupported = contentMode == UIViewContentModeScaleAspectFill ||
-                              contentMode == UIViewContentModeScaleAspectFit ||
-                              contentMode == UIViewContentModeCenter;
-  
-  CGSize backingSize   = CGSizeZero;
-  CGRect imageDrawRect = CGRectZero;
-  
-  if (boundsSizeInPixels.width * contentsScale < 1.0f || boundsSizeInPixels.height * contentsScale < 1.0f ||
-      imageSizeInPixels.width < 1.0f                  || imageSizeInPixels.height < 1.0f) {
-    return nil;
-  }
-  
-  
-  // If we're not supposed to do any cropping, just decode image at original size
-  if (!cropEnabled || !contentModeSupported || stretchable) {
-    backingSize = imageSizeInPixels;
-    imageDrawRect = (CGRect){.size = backingSize};
-  } else {
-    if (CGSizeEqualToSize(CGSizeZero, forcedSize) == NO) {
-      //scale forced size
-      forcedSize.width *= contentsScale;
-      forcedSize.height *= contentsScale;
-    }
-    ASCroppedImageBackingSizeAndDrawRectInBounds(imageSizeInPixels,
-                                                 boundsSizeInPixels,
-                                                 contentMode,
-                                                 cropRect,
-                                                 forceUpscaling,
-                                                 forcedSize,
-                                                 &backingSize,
-                                                 &imageDrawRect);
-  }
-  
-  if (backingSize.width <= 0.0f        || backingSize.height <= 0.0f ||
-      imageDrawRect.size.width <= 0.0f || imageDrawRect.size.height <= 0.0f) {
+    ASImageNodeContentsKey *contentsKey = parameter[ASDisplayLayerDrawParameterCacheKey];
+
+  if (contentsKey.backingSize.width <= 0.0f        || contentsKey.backingSize.height <= 0.0f ||
+      contentsKey.imageDrawRect.size.width <= 0.0f || contentsKey.imageDrawRect.size.height <= 0.0f) {
     return nil;
   }
 
@@ -489,59 +452,10 @@
     return nil;
   }
     
-    ASImageNodeContentsKey *contentsKey = parameter[ASDisplayLayerDrawParameterCacheKey];
-    //  ASImageNodeContentsKey *contentsKey = [[ASImageNodeContentsKey alloc] init];
-    //  contentsKey.image = image;
-    contentsKey.backingSize = backingSize;
-    contentsKey.imageDrawRect = imageDrawRect;
-    //  contentsKey.opaque = isOpaque;
-    //  contentsKey.backgroundColor = backgroundColor;
-    //  contentsKey.willDisplayNodeContentWithRenderingContext = willDisplayNodeContentWithRenderingContext;
-    //  contentsKey.didDisplayNodeContentWithRenderingContext = didDisplayNodeContentWithRenderingContext;
-    //  contentsKey.imageModificationBlock = imageModificationBlock;
-    
+  
   return [self.class createContentsForkey:contentsKey isCancelled:isCancelled];
 
-//  ASWeakMapEntry<UIImage *> *entry = [self.class contentsForkey:contentsKey isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled];
-//  if (entry == nil) {  // If nil, we were cancelled.
-//    return nil;
-//  }
-//  
-//  __instanceLock__.lock();
-//    _weakCacheEntry = entry; // Retain so that the entry remains in the weak cache
-//  __instanceLock__.unlock();
-//
-//  return entry.value;
 }
-
-//static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
-//static ASDN::Mutex cacheLock;
-//
-//+ (ASWeakMapEntry *)contentsForkey:(ASImageNodeContentsKey *)key isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
-//{
-//  {
-//    ASDN::MutexLocker l(cacheLock);
-//    if (!cache) {
-//      cache = [[ASWeakMap alloc] init];
-//    }
-//    ASWeakMapEntry *entry = [cache entryForKey:key];
-//    if (entry != nil) {
-//      // cache hit
-//      return entry;
-//    }
-//  }
-//
-//  // cache miss
-//  UIImage *contents = [self createContentsForkey:key isCancelled:isCancelled];
-//  if (contents == nil) { // If nil, we were cancelled
-//    return nil;
-//  }
-//
-//  {
-//    ASDN::MutexLocker l(cacheLock);
-//    return [cache setObject:contents forKey:key];
-//  }
-//}
 
 + (UIImage *)createContentsForkey:(ASImageNodeContentsKey *)key isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
 {
