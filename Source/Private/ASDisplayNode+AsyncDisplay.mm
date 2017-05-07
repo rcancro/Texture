@@ -211,16 +211,23 @@ static ASWeakMap *cache() {
   
   // Check in cache if entry already exists
   // TODO: Better way
-  id key = drawParameters[ASDisplayLayerDrawParameterCacheKey];
-  if (key != nil) {
-    id content = [cache() entryForKey:key];
-    
-    if (content != nil) {
-      displayBlock = ^id{
-        return content;
-      };
-      
-      return displayBlock;
+  id key = nil;
+  if ([drawParameters isKindOfClass:[NSMutableDictionary class]]) {
+    key = drawParameters[ASDisplayLayerDrawParameterCacheKey];
+    if (key != nil) {
+      ASWeakMapEntry *content = [cache() entryForKey:key];
+      // NSLog(@"%@", [(id)cache() performSelector:@selector(hashTable)]);
+      if (content != nil) {
+        
+        displayBlock = ^id{
+          NSLog(@"Cache hit");
+          CHECK_CANCELLED_AND_RETURN_NIL();
+          ASDN_DELAY_FOR_DISPLAY();
+          return content.value;
+        };
+        
+        return displayBlock;
+      }
     }
   }
   
@@ -304,9 +311,7 @@ static ASWeakMap *cache() {
       }
       
       if (key != nil) {
-        __unused id cacheEntry = [cache() setObject:image forKey:key];
-        
-        // TODO: Assign the cache entry to the node
+        _weakCacheEntry = [cache() setObject:image forKey:key];
       }
 
       ASDN_DELAY_FOR_DISPLAY();

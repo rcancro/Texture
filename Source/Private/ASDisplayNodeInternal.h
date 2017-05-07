@@ -28,6 +28,7 @@
 #import <AsyncDisplayKit/ASThread.h>
 #import <AsyncDisplayKit/_ASTransitionContext.h>
 #import <AsyncDisplayKit/ASWeakSet.h>
+#import <AsyncDisplayKit/ASWeakMap.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -167,6 +168,9 @@ FOUNDATION_EXPORT NSString * const ASRenderingEngineDidDisplayNodesScheduledBefo
   
   UIImage *_placeholderImage;
   CALayer *_placeholderLayer;
+  
+  // keeps the weak cache entry of the content alive as long as the node is alive
+  ASWeakMapEntry *_weakCacheEntry;
 
   // keeps track of nodes/subnodes that have not finished display, used with placeholders
   ASWeakSet *_pendingDisplayNodes;
