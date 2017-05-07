@@ -62,6 +62,7 @@ struct ASTextNodeDrawParameter {
 @interface ASTextNodeRendererKey : NSObject
 @property (assign, nonatomic) ASTextKitAttributes attributes;
 @property (assign, nonatomic) CGSize constrainedSize;
+@property (strong, nonatomic) UIColor *backgroundColor;
 @end
 
 @implementation ASTextNodeRendererKey
@@ -71,9 +72,11 @@ struct ASTextNodeDrawParameter {
   struct {
     size_t attributesHash;
     CGSize constrainedSize;
+    UIColor *backgroundColor;
   } data = {
     _attributes.hash(),
-    _constrainedSize
+    _constrainedSize,
+    _backgroundColor
   };
   return ASHashBytes(&data, sizeof(data));
 }
@@ -88,7 +91,9 @@ struct ASTextNodeDrawParameter {
     return NO;
   }
   
-  return _attributes == object.attributes && CGSizeEqualToSize(_constrainedSize, object.constrainedSize);
+  return _attributes == object.attributes
+    && CGSizeEqualToSize(_constrainedSize, object.constrainedSize)
+    && ASObjectIsEqual(_backgroundColor, object.backgroundColor);
 }
 
 @end
@@ -110,13 +115,14 @@ static NSCache *sharedRendererCache()
  we maintain a LRU renderer cache that is queried via a unique key based on text kit attributes and constrained size. 
  */
 
-static ASTextKitRenderer *rendererForAttributes(ASTextKitAttributes attributes, CGSize constrainedSize)
+static ASTextKitRenderer *rendererForAttributes(ASTextKitAttributes attributes, CGSize constrainedSize, UIColor *backgroundColor)
 {
   NSCache *cache = sharedRendererCache();
   
   ASTextNodeRendererKey *key = [[ASTextNodeRendererKey alloc] init];
   key.attributes = attributes;
   key.constrainedSize = constrainedSize;
+  key.backgroundColor = backgroundColor;
 
   ASTextKitRenderer *renderer = [cache objectForKey:key];
   if (renderer == nil) {
@@ -307,7 +313,7 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   ASDN::MutexLocker l(__instanceLock__);
   bounds.size.width -= (_textContainerInset.left + _textContainerInset.right);
   bounds.size.height -= (_textContainerInset.top + _textContainerInset.bottom);
-  return rendererForAttributes([self _rendererAttributes], bounds.size);
+  return rendererForAttributes([self _rendererAttributes], bounds.size, self.threadSafeBackgroundColor);
 }
 
 
@@ -491,7 +497,8 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   // Figoure out some cache key
   ASTextNodeRendererKey *key = [[ASTextNodeRendererKey alloc] init];
   key.attributes = [self _rendererAttributes];
-  key.constrainedSize = self.bounds.size;
+  key.constrainedSize = self.threadSafeBounds.size;
+  key.backgroundColor = self.threadSafeBackgroundColor;
   drawParameters[ASDisplayLayerDrawParameterCacheKey] = key;
 }
 

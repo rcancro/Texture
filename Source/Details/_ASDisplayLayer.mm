@@ -117,6 +117,12 @@
   }
 }
 
+- (void)setBackgroundColor:(CGColorRef)backgroundColor
+{
+  [super setBackgroundColor:backgroundColor];
+  self.asyncdisplaykit_node.threadSafeBackgroundColor = [UIColor colorWithCGColor:backgroundColor];
+}
+
 #if DEBUG // These override is strictly to help detect application-level threading errors.  Avoid method overhead in release.
 - (void)setContents:(id)contents
 {

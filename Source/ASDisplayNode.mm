@@ -80,6 +80,7 @@ NSInteger const ASDefaultDrawingPriority = ASDefaultTransactionPriority;
 
 @synthesize debugName = _debugName;
 @synthesize threadSafeBounds = _threadSafeBounds;
+@synthesize threadSafeBackgroundColor = _threadSafeBackgroundColor;
 @synthesize layoutSpecBlock = _layoutSpecBlock;
 
 static BOOL suppressesInvalidCollectionUpdateExceptions = NO;
@@ -843,6 +844,18 @@ static ASDisplayNodeMethodOverrides GetASDisplayNodeMethodOverrides(Class c)
 {
   ASDN::MutexLocker l(__instanceLock__);
   _threadSafeBounds = newBounds;
+}
+
+- (void)setThreadSafeBackgroundColor:(UIColor *)color
+{
+  ASDN::MutexLocker l(__instanceLock__);
+  _threadSafeBackgroundColor = color;
+}
+
+- (UIColor *)threadSafeBackgroundColor
+{
+  ASDN::MutexLocker l(__instanceLock__);
+  return _threadSafeBackgroundColor;
 }
 
 - (void)nodeViewDidAddGestureRecognizer

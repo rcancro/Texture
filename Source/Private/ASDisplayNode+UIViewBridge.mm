@@ -641,6 +641,7 @@ if (shouldApply) { _layer.layerProperty = (layerValueExpr); } else { ASDisplayNo
     } else {
         _layer.backgroundColor = newBackgroundCGColor;
     }
+    self.threadSafeBackgroundColor = newBackgroundColor;
       
     if (!CGColorEqualToColor(oldBackgroundCGColor, newBackgroundCGColor)) {
       [self setNeedsDisplay];
