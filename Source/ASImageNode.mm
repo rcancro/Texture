@@ -41,8 +41,6 @@
 
 #include <functional>
 
-//typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
-
 @interface ASImageNodeDrawParameters : NSObject {
   @package
   UIImage *_image;
@@ -59,7 +57,6 @@
   asimagenode_modification_block_t _imageModificationBlock;
   ASDisplayNodeContextModifier _willDisplayNodeContentWithRenderingContext;
   ASDisplayNodeContextModifier _didDisplayNodeContentWithRenderingContext;
-  //ASImageNodeDrawParametersBlock _didDrawBlock;
 }
 
 @end
@@ -72,12 +69,12 @@
 /**
  * Contains all data that is needed to generate the content bitmap.
  */
-@interface ASImageNodeContentsKey : NSObject {}
+@interface ASImageNodeContentsKey : NSObject
 
 @property (nonatomic, strong) UIImage *image;
-@property CGSize backingSize;
-@property CGRect imageDrawRect;
-@property BOOL isOpaque;
+@property (nonatomic, assign) CGSize backingSize;
+@property (nonatomic, assign) CGRect imageDrawRect;
+@property (nonatomic, assign, getter=isOpaque) BOOL opaque;
 @property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, copy) ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext;
 @property (nonatomic, copy) ASDisplayNodeContextModifier didDisplayNodeContentWithRenderingContext;
@@ -102,7 +99,7 @@
     return [_image isEqual:other.image]
       && CGSizeEqualToSize(_backingSize, other.backingSize)
       && CGRectEqualToRect(_imageDrawRect, other.imageDrawRect)
-      && _isOpaque == other.isOpaque
+      && _opaque == other.isOpaque
       && [_backgroundColor isEqual:other.backgroundColor]
       && _willDisplayNodeContentWithRenderingContext == other.willDisplayNodeContentWithRenderingContext
       && _didDisplayNodeContentWithRenderingContext == other.didDisplayNodeContentWithRenderingContext
@@ -127,7 +124,7 @@
     _image.hash,
     _backingSize,
     _imageDrawRect,
-    _isOpaque,
+    _opaque,
     _backgroundColor.hash,
     (void *)_willDisplayNodeContentWithRenderingContext,
     (void *)_didDisplayNodeContentWithRenderingContext,
@@ -307,30 +304,7 @@
 - (void)provideDrawParameters:(NSMutableDictionary *)drawParameters forAsyncLayer:(_ASDisplayLayer *)layer
 {
   ASDN::MutexLocker l(__instanceLock__);
-  
-  // Figure out some cache key for the node
-  UIImage *image = [self _locked_Image];
-  CGSize imageSize = image.size;
-  CGSize imageSizeInPixels = CGSizeMake(imageSize.width * image.scale, imageSize.height * image.scale);
-  
-  // For now let's use this sizes
-  CGSize backingSize = imageSizeInPixels;
-  CGRect imageDrawRect = {.size = backingSize};
-  
-  ASImageNodeContentsKey *contentsKey = [[ASImageNodeContentsKey alloc] init];
-  contentsKey.image = image;
-  contentsKey.backingSize = backingSize;
-  contentsKey.imageDrawRect = imageDrawRect;
-  contentsKey.isOpaque = self.isOpaque;
-  contentsKey.backgroundColor = self.backgroundColor;
-  contentsKey.willDisplayNodeContentWithRenderingContext = self.willDisplayNodeContentWithRenderingContext;
-  contentsKey.didDisplayNodeContentWithRenderingContext = self.didDisplayNodeContentWithRenderingContext;
-  contentsKey.imageModificationBlock = self.imageModificationBlock;
-  
-  drawParameters[ASDisplayLayerDrawParameterCacheKey] = contentsKey;
-
-  // Add actual parameter
-  
+    
   // TODO: We can use the boxing stuff that @adlai-holler created for boxing the c++ struct
   ASImageNodeDrawParameters *params = [[ASImageNodeDrawParameters alloc] init];
   params->_image = [self _locked_Image];
@@ -347,9 +321,80 @@
   params->_imageModificationBlock = _imageModificationBlock;
   params->_willDisplayNodeContentWithRenderingContext = _willDisplayNodeContentWithRenderingContext;
   params->_didDisplayNodeContentWithRenderingContext = _didDisplayNodeContentWithRenderingContext;
-  
-  drawParameters[@"params"] = params;
 
+  drawParameters[@"params"] = params;
+  
+  // No need to contents key if no image
+  ASImageNodeDrawParameters *drawParameter = params;
+  UIImage *image = drawParameter->_image;
+  if (image == nil) {
+    //return nil;
+      return;
+  }
+  
+  CGRect drawParameterBounds       = drawParameter->_bounds;
+  CGSize forcedSize                = drawParameter->_forcedSize;
+  BOOL cropEnabled                 = drawParameter->_cropEnabled;
+  UIViewContentMode contentMode    = drawParameter->_contentMode;
+  CGFloat contentsScale            = drawParameter->_contentsScale;
+  CGRect cropDisplayBounds         = drawParameter->_cropDisplayBounds;
+
+  
+  BOOL hasValidCropBounds = cropEnabled && !CGRectIsEmpty(cropDisplayBounds);
+  CGRect bounds = (hasValidCropBounds ? cropDisplayBounds : drawParameterBounds);
+  
+  
+  ASDisplayNodeAssert(contentsScale > 0, @"invalid contentsScale at display time");
+  
+  // if the image is resizable, bail early since the image has likely already been configured
+  BOOL stretchable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+  
+  CGSize imageSize = image.size;
+  CGSize imageSizeInPixels = CGSizeMake(imageSize.width * image.scale, imageSize.height * image.scale);
+  CGSize boundsSizeInPixels = CGSizeMake(std::floor(bounds.size.width * contentsScale), std::floor(bounds.size.height * contentsScale));
+  
+  BOOL contentModeSupported = contentMode == UIViewContentModeScaleAspectFill ||
+                              contentMode == UIViewContentModeScaleAspectFit ||
+                              contentMode == UIViewContentModeCenter;
+  
+  CGSize backingSize   = CGSizeZero;
+  CGRect imageDrawRect = CGRectZero;
+  
+  if (boundsSizeInPixels.width * contentsScale < 1.0f || boundsSizeInPixels.height * contentsScale < 1.0f ||
+      imageSizeInPixels.width < 1.0f                  || imageSizeInPixels.height < 1.0f) {
+    // TODO:??
+    return;
+      
+  }
+  
+  
+  // If we're not supposed to do any cropping, just decode image at original size
+  if (!cropEnabled || !contentModeSupported || stretchable) {
+    backingSize = imageSizeInPixels;
+    imageDrawRect = (CGRect){.size = backingSize};
+  } else {
+    if (CGSizeEqualToSize(CGSizeZero, forcedSize) == NO) {
+      //scale forced size
+      forcedSize.width *= contentsScale;
+      forcedSize.height *= contentsScale;
+    }
+      
+    // TODO: Needs to calculate the new final backgind size without cropping the actual image
+  }
+  
+  // Add cache key
+  
+  ASImageNodeContentsKey *contentsKey = [[ASImageNodeContentsKey alloc] init];
+  contentsKey.image = image;
+  contentsKey.backingSize = backingSize;
+  contentsKey.imageDrawRect = imageDrawRect;
+  contentsKey.opaque = self.isOpaque;
+  contentsKey.backgroundColor = self.backgroundColor;
+  contentsKey.willDisplayNodeContentWithRenderingContext = self.willDisplayNodeContentWithRenderingContext;
+  contentsKey.didDisplayNodeContentWithRenderingContext = self.didDisplayNodeContentWithRenderingContext;
+  contentsKey.imageModificationBlock = self.imageModificationBlock;
+  
+  drawParameters[ASDisplayLayerDrawParameterCacheKey] = contentsKey;
 }
 
 - (NSDictionary *)debugLabelAttributes
@@ -372,15 +417,15 @@
   BOOL forceUpscaling              = drawParameter->_forceUpscaling;
   CGSize forcedSize                = drawParameter->_forcedSize;
   BOOL cropEnabled                 = drawParameter->_cropEnabled;
-  BOOL isOpaque                    = drawParameter->_opaque;
-  UIColor *backgroundColor         = drawParameter->_backgroundColor;
+//  BOOL isOpaque                    = drawParameter->_opaque;
+//  UIColor *backgroundColor         = drawParameter->_backgroundColor;
   UIViewContentMode contentMode    = drawParameter->_contentMode;
   CGFloat contentsScale            = drawParameter->_contentsScale;
   CGRect cropDisplayBounds         = drawParameter->_cropDisplayBounds;
   CGRect cropRect                  = drawParameter->_cropRect;
   asimagenode_modification_block_t imageModificationBlock                 = drawParameter->_imageModificationBlock;
-  ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext = drawParameter->_willDisplayNodeContentWithRenderingContext;
-  ASDisplayNodeContextModifier didDisplayNodeContentWithRenderingContext  = drawParameter->_didDisplayNodeContentWithRenderingContext;
+//  ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext = drawParameter->_willDisplayNodeContentWithRenderingContext;
+//  ASDisplayNodeContextModifier didDisplayNodeContentWithRenderingContext  = drawParameter->_didDisplayNodeContentWithRenderingContext;
 
   
   BOOL hasValidCropBounds = cropEnabled && !CGRectIsEmpty(cropDisplayBounds);
@@ -440,19 +485,20 @@
     return nil;
   }
 
-  ASImageNodeContentsKey *contentsKey = [[ASImageNodeContentsKey alloc] init];
-  contentsKey.image = image;
-  contentsKey.backingSize = backingSize;
-  contentsKey.imageDrawRect = imageDrawRect;
-  contentsKey.isOpaque = isOpaque;
-  contentsKey.backgroundColor = backgroundColor;
-  contentsKey.willDisplayNodeContentWithRenderingContext = willDisplayNodeContentWithRenderingContext;
-  contentsKey.didDisplayNodeContentWithRenderingContext = didDisplayNodeContentWithRenderingContext;
-  contentsKey.imageModificationBlock = imageModificationBlock;
-
   if (isCancelled()) {
     return nil;
   }
+    
+    ASImageNodeContentsKey *contentsKey = parameter[ASDisplayLayerDrawParameterCacheKey];
+    //  ASImageNodeContentsKey *contentsKey = [[ASImageNodeContentsKey alloc] init];
+    //  contentsKey.image = image;
+    contentsKey.backingSize = backingSize;
+    contentsKey.imageDrawRect = imageDrawRect;
+    //  contentsKey.opaque = isOpaque;
+    //  contentsKey.backgroundColor = backgroundColor;
+    //  contentsKey.willDisplayNodeContentWithRenderingContext = willDisplayNodeContentWithRenderingContext;
+    //  contentsKey.didDisplayNodeContentWithRenderingContext = didDisplayNodeContentWithRenderingContext;
+    //  contentsKey.imageModificationBlock = imageModificationBlock;
     
   return [self.class createContentsForkey:contentsKey isCancelled:isCancelled];
 

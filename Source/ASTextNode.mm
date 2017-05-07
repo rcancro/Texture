@@ -52,11 +52,6 @@ static const CGFloat ASTextNodeHighlightLightOpacity = 0.11;
 static const CGFloat ASTextNodeHighlightDarkOpacity = 0.22;
 static NSString *ASTextNodeTruncationTokenAttributeName = @"ASTextNodeTruncationAttribute";
 
-struct ASTextNodeDrawParameter {
-  CGRect bounds;
-  UIColor *backgroundColor;
-};
-
 #pragma mark - ASTextKitRenderer
 
 @interface ASTextNodeRendererKey : NSObject
@@ -156,8 +151,6 @@ static ASTextKitRenderer *rendererForAttributes(ASTextKitAttributes attributes, 
   ASTextNodeHighlightStyle _highlightStyle;
   NSRange _highlightRange;
   ASHighlightOverlayLayer *_activeHighlightLayer;
-
-  ASTextNodeDrawParameter _drawParameter;
 
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 }
@@ -491,9 +484,7 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
 - (void)provideDrawParameters:(NSMutableDictionary *)drawParameters forAsyncLayer:(_ASDisplayLayer *)layer
 {
   ASDN::MutexLocker l(__instanceLock__);
-  drawParameters[@"backgroundColor"] = self.backgroundColor;
-  drawParameters[@"bounds"] = [NSValue valueWithCGRect:self.bounds];
-    
+
   // Figoure out some cache key
   ASTextNodeRendererKey *key = [[ASTextNodeRendererKey alloc] init];
   key.attributes = [self _rendererAttributes];
@@ -502,13 +493,12 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   drawParameters[ASDisplayLayerDrawParameterCacheKey] = key;
 }
 
-- (void)drawRect:(CGRect)bounds withParameters:(NSDictionary *)p isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock isRasterizing:(BOOL)isRasterizing;
+- (void)drawRect:(CGRect)bounds withParameters:(NSDictionary *)parameters isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock isRasterizing:(BOOL)isRasterizing;
 {
   ASDN::MutexLocker l(__instanceLock__);
 
-  //ASTextNodeDrawParameter drawParameter = _drawParameter;
-  CGRect drawParameterBounds = [p[@"bounds"] CGRectValue];
-  UIColor *backgroundColor = isRasterizing ? nil : p[@"backgroundColor"];
+  ASTextNodeRendererKey *key = parameters[ASDisplayLayerDrawParameterCacheKey];
+  UIColor *backgroundColor = isRasterizing ? nil : key.backgroundColor;
   
   CGContextRef context = UIGraphicsGetCurrentContext();
   ASDisplayNodeAssert(context, @"This is no good without a context.");
@@ -517,7 +507,7 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   
   CGContextTranslateCTM(context, _textContainerInset.left, _textContainerInset.top);
   
-  ASTextKitRenderer *renderer = [self _rendererWithBoundsSlow:drawParameterBounds];
+  ASTextKitRenderer *renderer = [self _rendererWithBoundsSlow:bounds];
   
   // Fill background
   if (backgroundColor != nil) {
@@ -526,7 +516,7 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   }
   
   // Draw text
-  [renderer drawInContext:context bounds:drawParameterBounds];
+  [renderer drawInContext:context bounds:bounds];
   
   CGContextRestoreGState(context);
 }
