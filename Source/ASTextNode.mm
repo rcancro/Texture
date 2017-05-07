@@ -83,6 +83,10 @@ struct ASTextNodeDrawParameter {
   if (self == object) {
     return YES;
   }
+    
+  if (![object isKindOfClass:[self class]]) {
+    return NO;
+  }
   
   return _attributes == object.attributes && CGSizeEqualToSize(_constrainedSize, object.constrainedSize);
 }
