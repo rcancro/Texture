@@ -485,9 +485,14 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
 - (void)provideDrawParameters:(NSMutableDictionary *)drawParameters forAsyncLayer:(_ASDisplayLayer *)layer
 {
   ASDN::MutexLocker l(__instanceLock__);
-  // drawParameters[ASDisplayLayerDrawParameterCacheKey] = "Some Key";
   drawParameters[@"backgroundColor"] = self.backgroundColor;
   drawParameters[@"bounds"] = [NSValue valueWithCGRect:self.bounds];
+    
+  // Figoure out some cache key
+  ASTextNodeRendererKey *key = [[ASTextNodeRendererKey alloc] init];
+  key.attributes = [self _rendererAttributes];
+  key.constrainedSize = self.bounds.size;
+  drawParameters[ASDisplayLayerDrawParameterCacheKey] = key;
 }
 
 - (void)drawRect:(CGRect)bounds withParameters:(NSDictionary *)p isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock isRasterizing:(BOOL)isRasterizing;
