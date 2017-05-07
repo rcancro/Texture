@@ -100,6 +100,10 @@ static const CGFloat kInnerPadding = 10.0f;
   // lorem ipsum text, plus some nice styling
 
   _textNode = [[ASTextNode alloc] init];
+  _textNode.shadowColor = [UIColor blackColor].CGColor;
+  _textNode.shadowRadius = 3;
+  _textNode.shadowOffset = CGSizeMake(-2, -2);
+  _textNode.shadowOpacity = 0.3;
   if (_textNode.usingExperiment) {
     _textNode.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:1 alpha:1];
   } else {

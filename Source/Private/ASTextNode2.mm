@@ -69,7 +69,6 @@ static NSString *ASTextNodeTruncationTokenAttributeName = @"ASTextNodeTruncation
   
   CGSize _shadowOffset;
   CGColorRef _shadowColor;
-  UIColor *_cachedShadowUIColor;
   CGFloat _shadowOpacity;
   CGFloat _shadowRadius;
   
@@ -239,7 +238,12 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   container.size = constrainedSize;
   [self _ensureTruncationText];
   
-  YYTextLayout *layout = [ASTextNode2 compatibleLayoutWithContainer:container text:attributedText];
+  NSMutableAttributedString *mutableText = [attributedText mutableCopy];
+  [self prepareAttributedStringForDrawing:mutableText];
+  YYTextLayout *layout = [ASTextNode2 compatibleLayoutWithContainer:container text:mutableText];
+  
+  [self setNeedsDisplay];
+  
   return layout.textBoundingSize;
   
   
@@ -342,6 +346,41 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   return _textContainer.exclusionPaths;
 }
 
+- (void)prepareAttributedStringForDrawing:(NSMutableAttributedString *)attributedString
+{
+  ASDN::MutexLocker lock(__instanceLock__);
+ 
+  // Apply paragraph style if needed
+  [attributedString enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, attributedString.length) options:kNilOptions usingBlock:^(NSParagraphStyle *style, NSRange range, BOOL * _Nonnull stop) {
+    if (style == nil || style.lineBreakMode == _truncationMode) {
+      return;
+    }
+    
+    NSMutableParagraphStyle *paragraphStyle = [style mutableCopy] ?: [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.lineBreakMode = _truncationMode;
+    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:range];
+  }];
+  
+  // Apply background color if needed
+  UIColor *backgroundColor = self.backgroundColor;
+  if (CGColorGetAlpha(backgroundColor.CGColor) > 0) {
+    [attributedString addAttribute:NSBackgroundColorAttributeName value:backgroundColor range:NSMakeRange(0, attributedString.length)];
+  }
+  
+  // Apply shadow if needed
+  if (_shadowOpacity > 0 && (_shadowRadius != 0 || !CGSizeEqualToSize(_shadowOffset, CGSizeZero)) && CGColorGetAlpha(_shadowColor) > 0) {
+    NSShadow *shadow = [[NSShadow alloc] init];
+    if (_shadowOpacity != 1) {
+      shadow.shadowColor = [UIColor colorWithCGColor:CGColorCreateCopyWithAlpha(_shadowColor, _shadowOpacity * CGColorGetAlpha(_shadowColor))];
+    } else {
+      shadow.shadowColor = [UIColor colorWithCGColor:_shadowColor];
+    }
+    shadow.shadowOffset = _shadowOffset;
+    shadow.shadowBlurRadius = _shadowRadius;
+    [attributedString addAttribute:NSShadowAttributeName value:shadow range:NSMakeRange(0, attributedString.length)];
+  }
+}
+
 #pragma mark - Drawing
 
 - (NSObject *)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer
@@ -349,10 +388,11 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   [self _ensureTruncationText];
   YYTextContainer *copiedContainer = [_textContainer copy];
   copiedContainer.size = self.bounds.size;
+  NSMutableAttributedString *mutableText = [self.attributedText mutableCopy] ?: [[NSMutableAttributedString alloc] init];
+  [self prepareAttributedStringForDrawing:mutableText];
   return @{
            @"container": copiedContainer,
-           @"text": (self.attributedText ?: [[NSAttributedString alloc] init]),
-           @"backgroundColor": (self.backgroundColor ?: (id)kCFNull)
+           @"text": mutableText
            };
 }
 
@@ -452,13 +492,6 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
   }
   CGContextRef context = UIGraphicsGetCurrentContext();
   ASDisplayNodeAssert(context, @"This is no good without a context.");
-  
-  // Fill background. Could do this using text attributes.
-  UIColor *backgroundColor = layoutDict[@"backgroundColor"];
-  if (backgroundColor != (id)kCFNull) {
-    [backgroundColor setFill];
-    UIRectFillUsingBlendMode(bounds, kCGBlendModeCopy);
-  }
   
   [layout drawInContext:context size:bounds.size point:bounds.origin view:nil layer:nil debug:[YYTextDebugOption sharedDebugOption] cancel:isCancelledBlock];
 }
@@ -1037,7 +1070,6 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
   if (_shadowColor != shadowColor && CGColorEqualToColor(shadowColor, _shadowColor) == NO) {
     CGColorRelease(_shadowColor);
     _shadowColor = CGColorRetain(shadowColor);
-    _cachedShadowUIColor = [UIColor colorWithCGColor:shadowColor];
     __instanceLock__.unlock();
     
     [self setNeedsDisplay];
@@ -1119,13 +1151,6 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
   //	return [self shadowPaddingWithRenderer:[self _renderer]];
 }
 
-- (UIEdgeInsets)shadowPaddingWithRenderer:(ASTextKitRenderer *)renderer
-{
-  ASDN::MutexLocker l(__instanceLock__);
-  
-  return renderer.shadower.shadowPadding;
-}
-
 - (void)setPointSizeScaleFactors:(NSArray<NSNumber *> *)scaleFactors
 {
 #warning Implementation needed.
@@ -1186,23 +1211,14 @@ static NSAttributedString *DefaultTruncationAttributedString()
   [self _invalidateTruncationText];
 }
 
-- (NSLineBreakMode)truncationMode
-{
-  switch (_textContainer.truncationType) {
-    case YYTextTruncationTypeEnd:
-      return NSLineBreakByTruncatingTail;
-    case YYTextTruncationTypeMiddle:
-      return NSLineBreakByTruncatingMiddle;
-    case YYTextTruncationTypeStart:
-      return NSLineBreakByTruncatingHead;
-    default:
-#warning TODO: Does this make sense?
-      return NSLineBreakByClipping;
-  }
-}
-
 - (void)setTruncationMode:(NSLineBreakMode)truncationMode
 {
+  ASDN::MutexLocker lock(__instanceLock__);
+  if (_truncationMode == truncationMode) {
+    return;
+  }
+  _truncationMode = truncationMode;
+  
   YYTextTruncationType yyType;
   switch (truncationMode) {
     case NSLineBreakByTruncatingHead:
@@ -1215,12 +1231,7 @@ static NSAttributedString *DefaultTruncationAttributedString()
       yyType = YYTextTruncationTypeMiddle;
       break;
     default:
-#warning TODO: Does this make sense?
       yyType = YYTextTruncationTypeNone;
-  }
-		
-  if (_textContainer.truncationType == yyType) {
-    return;
   }
 		
   _textContainer.truncationType = yyType;
