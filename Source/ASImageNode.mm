@@ -41,7 +41,7 @@
 
 #include <functional>
 
-typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
+//typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 
 @interface ASImageNodeDrawParameters : NSObject {
   @package
@@ -59,7 +59,7 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
   asimagenode_modification_block_t _imageModificationBlock;
   ASDisplayNodeContextModifier _willDisplayNodeContentWithRenderingContext;
   ASDisplayNodeContextModifier _didDisplayNodeContentWithRenderingContext;
-  ASImageNodeDrawParametersBlock _didDrawBlock;
+  //ASImageNodeDrawParametersBlock _didDrawBlock;
 }
 
 @end
@@ -143,7 +143,7 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 {
 @private
   UIImage *_image;
-  ASWeakMapEntry *_weakCacheEntry;  // Holds a reference that keeps our contents in cache.
+  //ASWeakMapEntry *_weakCacheEntry;  // Holds a reference that keeps our contents in cache.
 
 
   void (^_displayCompletionBlock)(BOOL canceled);
@@ -453,47 +453,49 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
   if (isCancelled()) {
     return nil;
   }
+    
+  return [self.class createContentsForkey:contentsKey isCancelled:isCancelled];
 
-  ASWeakMapEntry<UIImage *> *entry = [self.class contentsForkey:contentsKey isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled];
-  if (entry == nil) {  // If nil, we were cancelled.
-    return nil;
-  }
-  
-  __instanceLock__.lock();
-    _weakCacheEntry = entry; // Retain so that the entry remains in the weak cache
-  __instanceLock__.unlock();
-
-  return entry.value;
+//  ASWeakMapEntry<UIImage *> *entry = [self.class contentsForkey:contentsKey isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled];
+//  if (entry == nil) {  // If nil, we were cancelled.
+//    return nil;
+//  }
+//  
+//  __instanceLock__.lock();
+//    _weakCacheEntry = entry; // Retain so that the entry remains in the weak cache
+//  __instanceLock__.unlock();
+//
+//  return entry.value;
 }
 
-static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
-static ASDN::Mutex cacheLock;
-
-+ (ASWeakMapEntry *)contentsForkey:(ASImageNodeContentsKey *)key isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
-{
-  {
-    ASDN::MutexLocker l(cacheLock);
-    if (!cache) {
-      cache = [[ASWeakMap alloc] init];
-    }
-    ASWeakMapEntry *entry = [cache entryForKey:key];
-    if (entry != nil) {
-      // cache hit
-      return entry;
-    }
-  }
-
-  // cache miss
-  UIImage *contents = [self createContentsForkey:key isCancelled:isCancelled];
-  if (contents == nil) { // If nil, we were cancelled
-    return nil;
-  }
-
-  {
-    ASDN::MutexLocker l(cacheLock);
-    return [cache setObject:contents forKey:key];
-  }
-}
+//static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
+//static ASDN::Mutex cacheLock;
+//
+//+ (ASWeakMapEntry *)contentsForkey:(ASImageNodeContentsKey *)key isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
+//{
+//  {
+//    ASDN::MutexLocker l(cacheLock);
+//    if (!cache) {
+//      cache = [[ASWeakMap alloc] init];
+//    }
+//    ASWeakMapEntry *entry = [cache entryForKey:key];
+//    if (entry != nil) {
+//      // cache hit
+//      return entry;
+//    }
+//  }
+//
+//  // cache miss
+//  UIImage *contents = [self createContentsForkey:key isCancelled:isCancelled];
+//  if (contents == nil) { // If nil, we were cancelled
+//    return nil;
+//  }
+//
+//  {
+//    ASDN::MutexLocker l(cacheLock);
+//    return [cache setObject:contents forKey:key];
+//  }
+//}
 
 + (UIImage *)createContentsForkey:(ASImageNodeContentsKey *)key isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
 {
@@ -628,9 +630,9 @@ static ASDN::Mutex cacheLock;
 {
   [super clearContents];
     
-  __instanceLock__.lock();
-    _weakCacheEntry = nil;  // release contents from the cache.
-  __instanceLock__.unlock();
+//  __instanceLock__.lock();
+//    _weakCacheEntry = nil;  // release contents from the cache.
+//  __instanceLock__.unlock();
 }
 
 #pragma mark - Cropping

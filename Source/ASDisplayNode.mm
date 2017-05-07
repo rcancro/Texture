@@ -3649,6 +3649,8 @@ ASDISPLAYNODE_INLINE BOOL subtreeIsRasterized(ASDisplayNode *node) {
     // No-op if these haven't been created yet, as that guarantees they don't have contents that needs to be released.
     _layer.contents = nil;
   }
+    
+  _weakCacheEntry = nil;
   
   _placeholderLayer.contents = nil;
   _placeholderImage = nil;
