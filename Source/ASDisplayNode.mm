@@ -117,6 +117,8 @@ _ASPendingState *ASDisplayNodeGetPendingState(ASDisplayNode *node)
   return result;
 }
 
+NSString * const ASDisplayLayerDrawParameterCacheKey = @"ASDisplayLayerDrawParameterCacheKey";
+
 /**
  *  Returns ASDisplayNodeFlags for the given class/instance. instance MAY BE NIL.
  *
@@ -142,10 +144,12 @@ static struct ASDisplayNodeFlags GetASDisplayNodeFlags(Class c, ASDisplayNode *i
   flags.implementsImageDisplay = ([c respondsToSelector:@selector(displayWithParameters:isCancelled:)] ? 1 : 0);
   if (instance) {
     flags.implementsDrawParameters = ([instance respondsToSelector:@selector(drawParametersForAsyncLayer:)] ? 1 : 0);
+    flags.implementsProvideDrawParameters = ([instance respondsToSelector:@selector(provideDrawParameters:forAsyncLayer:)] ? 1 : 0);
     flags.implementsInstanceDrawRect = ([instance respondsToSelector:@selector(drawRect:withParameters:isCancelled:isRasterizing:)] ? 1 : 0);
     flags.implementsInstanceImageDisplay = ([instance respondsToSelector:@selector(displayWithParameters:isCancelled:)] ? 1 : 0);
   } else {
     flags.implementsDrawParameters = ([c instancesRespondToSelector:@selector(drawParametersForAsyncLayer:)] ? 1 : 0);
+    flags.implementsProvideDrawParameters = ([c instancesRespondToSelector:@selector(provideDrawParameters:forAsyncLayer:)] ? 1 : 0);
     flags.implementsInstanceDrawRect = ([c instancesRespondToSelector:@selector(drawRect:withParameters:isCancelled:isRasterizing:)] ? 1 : 0);
     flags.implementsInstanceImageDisplay = ([c instancesRespondToSelector:@selector(displayWithParameters:isCancelled:)] ? 1 : 0);
   }

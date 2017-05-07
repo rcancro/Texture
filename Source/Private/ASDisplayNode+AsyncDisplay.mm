@@ -22,6 +22,16 @@
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASDisplayNode+FrameworkSubclasses.h>
 #import <AsyncDisplayKit/ASInternalHelpers.h>
+#import <AsyncDisplayKit/ASWeakMap.h>
+
+static ASWeakMap *cache() {
+  static ASWeakMap *cache;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    cache = [ASWeakMap new];
+  });
+  return cache;
+}
 
 @interface ASDisplayNode () <_ASDisplayLayerDelegate>
 @end
@@ -43,10 +53,15 @@
 {
   __instanceLock__.lock();
   BOOL implementsDrawParameters = _flags.implementsDrawParameters;
+  BOOL implementsProvideDrawParameters = _flags.implementsProvideDrawParameters;
   __instanceLock__.unlock();
 
   if (implementsDrawParameters) {
     return [self drawParametersForAsyncLayer:self.asyncLayer];
+  } else if (implementsProvideDrawParameters) {
+    NSMutableDictionary *drawParameters = [NSMutableDictionary dictionary];
+    [self provideDrawParameters:drawParameters forAsyncLayer:self.asyncLayer];
+    return drawParameters;
   } else {
     return nil;
   }
@@ -194,6 +209,21 @@
     return nil;
   }
   
+  // Check in cache if entry already exists
+  // TODO: Better way
+  id key = drawParameters[ASDisplayLayerDrawParameterCacheKey];
+  if (key != nil) {
+    id content = [cache() entryForKey:key];
+    
+    if (content != nil) {
+      displayBlock = ^id{
+        return content;
+      };
+      
+      return displayBlock;
+    }
+  }
+  
   ASDisplayNodeAssert(contentsScaleForDisplay != 0.0, @"Invalid contents scale");
   ASDisplayNodeAssert(usesInstanceMethodDisplay == NO || (flags.implementsDrawRect == NO && flags.implementsImageDisplay == NO),
                       @"Node %@ should not implement both class and instance method display or draw", self);
@@ -258,11 +288,9 @@
       id object = usesInstanceMethodDisplay ? self : [self class];
       
       if (usesImageDisplay) {                                   // If we are using a display method, we'll get an image back directly.
-        image = [object displayWithParameters:drawParameters
-                                  isCancelled:isCancelledBlock];
+        image = [object displayWithParameters:drawParameters isCancelled:isCancelledBlock];
       } else if (usesDrawRect) {                                // If we're using a draw method, this will operate on the currentContext.
-        [object drawRect:bounds withParameters:drawParameters
-             isCancelled:isCancelledBlock isRasterizing:rasterizing];
+        [object drawRect:bounds withParameters:drawParameters isCancelled:isCancelledBlock isRasterizing:rasterizing];
       }
       
       if (didDisplayNodeContentWithRenderingContext != nil) {
@@ -273,6 +301,12 @@
         CHECK_CANCELLED_AND_RETURN_NIL( UIGraphicsEndImageContext(); );
         image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+      }
+      
+      if (key != nil) {
+        __unused id cacheEntry = [cache() setObject:image forKey:key];
+        
+        // TODO: Assign the cache entry to the node
       }
 
       ASDN_DELAY_FOR_DISPLAY();

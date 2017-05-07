@@ -308,6 +308,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable id<NSObject>)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer;
 
+
+// If a parameter cache key is provided it can be used for contents caching. It needs to comply to <NSCopying>
+extern NSString* const ASDisplayLayerDrawParameterCacheKey;
+
+// Fill in drawParameters with draw parameters
+- (void)provideDrawParameters:(NSMutableDictionary *)drawParameters forAsyncLayer:(_ASDisplayLayer *)layer;
+
 /**
  * @abstract Indicates that the receiver is about to display.
  *

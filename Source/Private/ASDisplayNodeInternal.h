@@ -113,6 +113,7 @@ FOUNDATION_EXPORT NSString * const ASRenderingEngineDidDisplayNodesScheduledBefo
     unsigned implementsInstanceImageDisplay:1;
     unsigned implementsImageDisplay:1;
     unsigned implementsDrawParameters:1;
+    unsigned implementsProvideDrawParameters:1;
 
     // internal state
     unsigned isEnteringHierarchy:1;

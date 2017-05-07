@@ -471,25 +471,28 @@ static NSArray *DefaultLinkAttributeNames = @[ NSLinkAttributeName ];
 
 #pragma mark - Drawing
 
-- (NSObject *)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer
+- (id<NSObject>)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer
 {
-  ASDN::MutexLocker l(__instanceLock__);
-  
-  _drawParameter = {
-    .backgroundColor = self.backgroundColor,
-    .bounds = self.bounds
-  };
-  return nil;
+  NSMutableDictionary *drawParameters = [NSMutableDictionary dictionary];
+  [self provideDrawParameters:drawParameters forAsyncLayer:layer];
+  return drawParameters;
 }
 
+- (void)provideDrawParameters:(NSMutableDictionary *)drawParameters forAsyncLayer:(_ASDisplayLayer *)layer
+{
+  ASDN::MutexLocker l(__instanceLock__);
+  // drawParameters[ASDisplayLayerDrawParameterCacheKey] = "Some Key";
+  drawParameters[@"backgroundColor"] = self.backgroundColor;
+  drawParameters[@"bounds"] = [NSValue valueWithCGRect:self.bounds];
+}
 
-- (void)drawRect:(CGRect)bounds withParameters:(id <NSObject>)p isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock isRasterizing:(BOOL)isRasterizing;
+- (void)drawRect:(CGRect)bounds withParameters:(NSDictionary *)p isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock isRasterizing:(BOOL)isRasterizing;
 {
   ASDN::MutexLocker l(__instanceLock__);
 
-  ASTextNodeDrawParameter drawParameter = _drawParameter;
-  CGRect drawParameterBounds = drawParameter.bounds;
-  UIColor *backgroundColor = isRasterizing ? nil : drawParameter.backgroundColor;
+  //ASTextNodeDrawParameter drawParameter = _drawParameter;
+  CGRect drawParameterBounds = [p[@"bounds"] CGRectValue];
+  UIColor *backgroundColor = isRasterizing ? nil : p[@"backgroundColor"];
   
   CGContextRef context = UIGraphicsGetCurrentContext();
   ASDisplayNodeAssert(context, @"This is no good without a context.");
