@@ -840,6 +840,11 @@ static ASDisplayNodeMethodOverrides GetASDisplayNodeMethodOverrides(Class c)
   return _threadSafeBounds;
 }
 
+- (CGRect)_locked_threadSafeBounds
+{
+  return _threadSafeBounds; 
+}
+
 - (void)setThreadSafeBounds:(CGRect)newBounds
 {
   ASDN::MutexLocker l(__instanceLock__);

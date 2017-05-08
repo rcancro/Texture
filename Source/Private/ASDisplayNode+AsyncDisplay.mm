@@ -209,28 +209,6 @@ static ASWeakMap *cache() {
     return nil;
   }
   
-  // Check in cache if entry already exists
-  // TODO: Better way
-  id key = nil;
-  if ([drawParameters isKindOfClass:[NSMutableDictionary class]]) {
-    key = drawParameters[ASDisplayLayerDrawParameterCacheKey];
-    if (key != nil) {
-      ASWeakMapEntry *content = [cache() entryForKey:key];
-      // NSLog(@"%@", [(id)cache() performSelector:@selector(hashTable)]);
-      if (content != nil) {
-        
-        displayBlock = ^id{
-          NSLog(@"Cache hit");
-          CHECK_CANCELLED_AND_RETURN_NIL();
-          ASDN_DELAY_FOR_DISPLAY();
-          return content.value;
-        };
-        
-        return displayBlock;
-      }
-    }
-  }
-  
   ASDisplayNodeAssert(contentsScaleForDisplay != 0.0, @"Invalid contents scale");
   ASDisplayNodeAssert(usesInstanceMethodDisplay == NO || (flags.implementsDrawRect == NO && flags.implementsImageDisplay == NO),
                       @"Node %@ should not implement both class and instance method display or draw", self);
@@ -266,6 +244,21 @@ static ASWeakMap *cache() {
   } else {
     displayBlock = ^id{
       CHECK_CANCELLED_AND_RETURN_NIL();
+        
+        // Check in cache if entry already exists
+        // TODO: Better way
+        id key = nil;
+        if ([drawParameters isKindOfClass:[NSMutableDictionary class]]) {
+          key = drawParameters[ASDisplayLayerDrawParameterCacheKey];
+          if (key != nil) {
+            ASWeakMapEntry *content = [cache() entryForKey:key];
+            if (content != nil) {
+              CHECK_CANCELLED_AND_RETURN_NIL();
+              ASDN_DELAY_FOR_DISPLAY();
+              return content.value;
+            }
+          }
+        }
 
       if (shouldCreateGraphicsContext) {
         UIGraphicsBeginImageContextWithOptions(bounds.size, opaque, contentsScaleForDisplay);

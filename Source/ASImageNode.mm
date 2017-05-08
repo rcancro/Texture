@@ -287,11 +287,13 @@
   
   // General parameters
   drawParameters[@"image"] = image;
+    
   if (_imageModificationBlock) {
     drawParameters[@"imageModificationBlock"] = _imageModificationBlock;
   }
   
-  CGRect drawParameterBounds       = self.threadSafeBounds;
+  // Setup cache key properties
+  CGRect drawParameterBounds       = [self _locked_threadSafeBounds];
   CGSize forcedSize                = _forcedSize;
   BOOL cropEnabled                 = _cropEnabled;
   UIViewContentMode contentMode    = self.contentMode;
@@ -300,7 +302,6 @@
   CGRect cropRect                  = _cropRect;
   BOOL forceUpscaling              = _forceUpscaling;
 
-
   BOOL hasValidCropBounds = cropEnabled && !CGRectIsEmpty(cropDisplayBounds);
   CGRect bounds = (hasValidCropBounds ? cropDisplayBounds : drawParameterBounds);
   
@@ -308,6 +309,11 @@
   
   // if the image is resizable, bail early since the image has likely already been configured
   BOOL stretchable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+  if (stretchable && _imageModificationBlock) {
+    // If there is an image modification block we don't have to calcualate a cache key as the content will not be cached
+    // anyway
+    return;
+  }
   
   CGSize imageSize = image.size;
   CGSize imageSizeInPixels = CGSizeMake(imageSize.width * image.scale, imageSize.height * image.scale);
@@ -377,11 +383,15 @@
     return nil;
   }
   
+  if (isCancelled()) {
+    return nil;
+  }
+  
   // if the image is resizable, bail early since the image has likely already been configured
   BOOL stretchable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
   if (stretchable) {
     asimagenode_modification_block_t imageModificationBlock  = parameter[@"imageModificationBlock"];
-    if (imageModificationBlock != NULL) {
+    if (imageModificationBlock) {
       image = imageModificationBlock(image);
     }
     return image;
@@ -389,10 +399,6 @@
   
   ASImageNodeContentsKey *contentsKey = parameter[ASDisplayLayerDrawParameterCacheKey];
   if (contentsKey == nil) {
-    return nil;
-  }
-
-  if (isCancelled()) {
     return nil;
   }
   
