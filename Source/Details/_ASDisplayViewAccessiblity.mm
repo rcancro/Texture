@@ -227,11 +227,6 @@ static void CollectAccessibilityElements(ASDisplayNode *node, NSMutableArray *el
 
   UIView *view = node.view;
 
-  // If we don't have a window, let's just bail out
-  if (!view.window) {
-    return;
-  }
-
   if (node.isAccessibilityContainer && !anySubNodeIsCollection) {
     CollectAccessibilityElementsForContainer(node, view, elements);
     return;
@@ -247,11 +242,6 @@ static void CollectAccessibilityElements(ASDisplayNode *node, NSMutableArray *el
     // If a node is hidden or has an alpha of 0.0 we should not include it
     if (subnode.hidden || subnode.alpha == 0.0) {
         continue;
-    }
-    // If a subnode is outside of the view's window, exclude it
-    CGRect nodeInWindowCoords = [node convertRect:subnode.frame toNode:nil];
-    if (!CGRectIntersectsRect(view.window.frame, nodeInWindowCoords)) {
-      continue;
     }
     
     if (subnode.isAccessibilityElement) {
