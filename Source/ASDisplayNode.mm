@@ -748,6 +748,11 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__);
   ASDisplayNodeAssert(!isLayerBacked || self.supportsLayerBacking, @"Node %@ does not support layer backing.", self);
 
   MutexLocker l(__instanceLock__);
+  if (ASActivateExperimentalFeature(ASExperimentalDeoptimizeTexture)) {
+    _flags.layerBacked = NO;
+    return;
+  }
+
   if (_flags.layerBacked == isLayerBacked) {
     return;
   }
