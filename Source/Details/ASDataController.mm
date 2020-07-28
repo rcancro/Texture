@@ -53,7 +53,6 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   BOOL _itemCountsFromDataSourceAreValid;     // Main thread only.
   std::vector<NSInteger> _itemCountsFromDataSource;         // Main thread only.
   
-  BOOL _forceUpdatesEditsOnMainThread;
   ASMainSerialQueue *_mainSerialQueue;
 
   dispatch_queue_t _editingTransactionQueue;  // Serial background queue.  Dispatches concurrent layout and manages _editingNodes.
@@ -89,7 +88,6 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     return nil;
   }
   
-  _forceUpdatesEditsOnMainThread = ASActivateExperimentalFeature(ASExperimentalAllowPerformanceComparison);
   _node = node;
   _dataSource = dataSource;
   
@@ -135,9 +133,7 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 - (void)_allocateNodesFromElements:(NSArray<ASCollectionElement *> *)elements
 {
-  if (!_forceUpdatesEditsOnMainThread) {
-    ASSERT_ON_EDITING_QUEUE;
-  }
+  ASSERT_ON_EDITING_QUEUE;
   
   NSUInteger nodeCount = elements.count;
   __weak id<ASDataControllerSource> weakDataSource = _dataSource;
@@ -149,7 +145,13 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
   {
     as_activity_create_for_scope("Data controller batch");
-    void (^layoutWork)(size_t i) = ^(size_t i) {
+
+    dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
+    NSUInteger threadCount = 0;
+    if ([_dataSource dataControllerShouldSerializeNodeCreation:self]) {
+      threadCount = 1;
+    }
+    ASDispatchApply(nodeCount, queue, threadCount, ^(size_t i) {
       __strong id<ASDataControllerSource> strongDataSource = weakDataSource;
       if (strongDataSource == nil) {
         return;
@@ -163,27 +165,14 @@ typedef void (^ASDataControllerSynchronizationBlock)();
       unowned ASCellNode *node = element.node;
       [dict removeObjectForKey:ASThreadDictMaxConstraintSizeKey];
 
+      if (!ASActivateExperimentalFeature(ASExperimentalAllowPerformanceComparison)) {
       // Layout the node if the size range is valid.
-      ASSizeRange sizeRange = element.constrainedSize;
-      if (ASSizeRangeHasSignificantArea(sizeRange)) {
-        [self _layoutNode:node withConstrainedSize:sizeRange];
+        ASSizeRange sizeRange = element.constrainedSize;
+        if (ASSizeRangeHasSignificantArea(sizeRange)) {
+          [self _layoutNode:node withConstrainedSize:sizeRange];
+        }
       }
-    };
-
-    if (_forceUpdatesEditsOnMainThread) {
-      for (size_t i = 0; i < nodeCount; i++) {
-          layoutWork(i);
-      }
-    } else {
-      dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
-      NSUInteger threadCount = 0;
-      if ([_dataSource dataControllerShouldSerializeNodeCreation:self]) {
-        threadCount = 1;
-      }
-      ASDispatchApply(nodeCount, queue, threadCount, ^(size_t i) {
-        layoutWork(i);
-      });
-    }
+    });
   }
 
   ASSignpostEnd(DataControllerBatch, self, "count: %lu", (unsigned long)nodeCount);
@@ -491,9 +480,6 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 - (void)waitUntilAllUpdatesAreProcessed
 {
-  if (_forceUpdatesEditsOnMainThread) {
-    return;
-  }
   // Schedule block in main serial queue to wait until all operations are finished that are
   // where scheduled while waiting for the _editingTransactionQueue to finish
   [self _scheduleBlockOnMainSerialQueue:^{ }];
@@ -571,7 +557,7 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     os_log_debug(ASCollectionLog(), "performBatchUpdates %@ %@", ASViewToDisplayNode(ASDynamicCast(self.dataSource, UIView)), changeSet);
   }
 
-  if (!_forceUpdatesEditsOnMainThread && !ASActivateExperimentalFeature(ASExperimentalOptimizeDataControllerPipeline)) {
+  if (!ASActivateExperimentalFeature(ASExperimentalOptimizeDataControllerPipeline)) {
     NSTimeInterval transactionQueueFlushDuration = 0.0f;
     {
       AS::ScopeTimer t(transactionQueueFlushDuration);
@@ -638,8 +624,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   os_log_debug(ASCollectionLog(), "New content: %@", newMap.smallDescription);
 
   Class<ASDataControllerLayoutDelegate> layoutDelegateClass = [self.layoutDelegate class];
-  
-  dispatch_block_t allocateNodesBlock = ^{
+  ++_editingTransactionGroupCount;
+  dispatch_group_async(_editingTransactionGroup, _editingTransactionQueue, ^{
     __block __unused os_activity_scope_state_s preparationScope = {}; // unused if deployment target < iOS10
     as_activity_scope_enter(as_activity_create("Prepare nodes for collection update", AS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT), &preparationScope);
 
@@ -675,17 +661,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
         self.visibleMap = newMap;
       }];
     }];
-  };
-  
-  if (_forceUpdatesEditsOnMainThread) {
-    [self->_mainSerialQueue performBlockOnMainThread:allocateNodesBlock];
-  } else {
-    ++_editingTransactionGroupCount;
-    dispatch_group_async(_editingTransactionGroup, _editingTransactionQueue, ^{
-      allocateNodesBlock();
-      --self->_editingTransactionGroupCount;
-    });
-  }
+    --self->_editingTransactionGroupCount;
+  });
 
   // We've now dispatched node allocation and layout to a concurrent background queue.
   // In some cases, it's advantageous to prevent the main thread from returning, to ensure the next
@@ -952,9 +929,7 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 - (void)_scheduleBlockOnMainSerialQueue:(dispatch_block_t)block
 {
   ASDisplayNodeAssertMainThread();
-  if (!_forceUpdatesEditsOnMainThread) {
-    dispatch_group_wait(_editingTransactionGroup, DISPATCH_TIME_FOREVER);
-  }
+  dispatch_group_wait(_editingTransactionGroup, DISPATCH_TIME_FOREVER);
   [_mainSerialQueue performBlockOnMainThread:block];
 }
 
