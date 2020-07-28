@@ -89,7 +89,7 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     return nil;
   }
   
-  _forceUpdatesEditsOnMainThread = ASActivateExperimentalFeature(ASExperimentalDeoptimizeTexture);
+  _forceUpdatesEditsOnMainThread = ASActivateExperimentalFeature(ASExperimentalAllowPerformanceComparison);
   _node = node;
   _dataSource = dataSource;
   

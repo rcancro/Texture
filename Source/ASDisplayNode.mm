@@ -126,6 +126,9 @@ static struct ASDisplayNodeFlags GetASDisplayNodeFlags(Class c, ASDisplayNode *i
     flags.implementsDrawParameters = ([c instancesRespondToSelector:@selector(drawParametersForAsyncLayer:)] ? 1 : 0);
   }
   
+  if (ASActivateExperimentalFeature(ASExperimentalAllowPerformanceComparison)) {
+    flags.layerBacked = NO;
+  }
   
   return flags;
 }
@@ -748,7 +751,7 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__);
   ASDisplayNodeAssert(!isLayerBacked || self.supportsLayerBacking, @"Node %@ does not support layer backing.", self);
 
   MutexLocker l(__instanceLock__);
-  if (ASActivateExperimentalFeature(ASExperimentalDeoptimizeTexture)) {
+  if (ASActivateExperimentalFeature(ASExperimentalAllowPerformanceComparison)) {
     _flags.layerBacked = NO;
     return;
   }
@@ -3197,7 +3200,7 @@ ASDISPLAYNODE_INLINE BOOL subtreeIsRasterized(ASDisplayNode *node) {
   // (see -__layout and -_u_measureNodeWithBoundsIfNecessary:). This scenario is uncommon,
   // and running a measurement pass here is a fine trade-off because preloading any time after this point would be late.
   
-  if (self.automaticallyManagesSubnodes && !ASActivateExperimentalFeature(ASExperimentalDidEnterPreloadSkipASMLayout)) {
+  if (ASActivateExperimentalFeature(ASExperimentalAllowPerformanceComparison) || (self.automaticallyManagesSubnodes && !ASActivateExperimentalFeature(ASExperimentalDidEnterPreloadSkipASMLayout))) {
     [self layoutIfNeeded];
   }
   [self enumerateInterfaceStateDelegates:^(id<ASInterfaceStateDelegate> del) {

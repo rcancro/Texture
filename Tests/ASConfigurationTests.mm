@@ -28,7 +28,7 @@ static ASExperimentalFeatures features[] = {
   ASExperimentalDispatchApply,
   ASExperimentalDrawingGlobal,
   ASExperimentalOptimizeDataControllerPipeline,
-  ASExperimentalDeoptimizeTexture,
+  ASExperimentalAllowPerformanceComparison,
 };
 
 @interface ASConfigurationTests : ASTestCase <ASConfigurationDelegate>
@@ -51,7 +51,7 @@ static ASExperimentalFeatures features[] = {
     @"exp_dispatch_apply",
     @"exp_drawing_global",
     @"exp_optimize_data_controller_pipeline",
-    @"exp_deoptimize_texture",
+    @"exp_allow_performance_comparison",
   ];
 }
 
