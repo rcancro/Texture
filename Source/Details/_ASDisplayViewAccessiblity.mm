@@ -70,14 +70,6 @@ static CGRect ASAccessibilityFrameForNode(ASDisplayNode *node) {
   return [layer convertRect:node.bounds toLayer:ASFindWindowOfLayer(layer).layer];
 }
 
-@interface ASAccessibilityElement : UIAccessibilityElement
-
-@property (nonatomic) ASDisplayNode *node;
-
-+ (ASAccessibilityElement *)accessibilityElementWithContainer:(UIView *)container node:(ASDisplayNode *)node;
-
-@end
-
 @implementation ASAccessibilityElement
 
 + (ASAccessibilityElement *)accessibilityElementWithContainer:(UIView *)container node:(ASDisplayNode *)node
@@ -107,11 +99,7 @@ static CGRect ASAccessibilityFrameForNode(ASDisplayNode *node) {
 
 #pragma mark - _ASDisplayView / UIAccessibilityContainer
 
-@interface ASAccessibilityCustomAction : UIAccessibilityCustomAction
 
-@property (nonatomic) ASDisplayNode *node;
-
-@end
 
 @implementation ASAccessibilityCustomAction
 

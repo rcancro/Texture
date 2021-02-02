@@ -119,6 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) UIEdgeInsets shadowPadding;
 
+@property (nonatomic, readonly) UIEdgeInsets paddings;
+
 #pragma mark - Positioning
 
 /**

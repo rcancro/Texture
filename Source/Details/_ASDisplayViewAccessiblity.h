@@ -28,3 +28,26 @@ typedef NSComparisonResult (^ASSortAccessibilityElementsComparator)(NSObject *, 
 
 // Use this method to supply your own custom sort comparator used to determine the order of the accessibility elements
 void setUserDefinedAccessibilitySortComparator(ASSortAccessibilityElementsComparator userDefinedComparator);
+
+@class ASAccessibilityElement;
+@protocol ASAccessibilityElementFrameProviding <NSObject>
+- (CGRect)accessibilityFrameForAccessibilityElement:(ASAccessibilityElement *)accessibilityElement;
+@end
+
+@interface ASAccessibilityElement : UIAccessibilityElement
+
+@property (nonatomic) ASDisplayNode *node;
+@property (nonatomic, assign) NSRange accessibilityRange;
+@property (nonatomic, weak) id<ASAccessibilityElementFrameProviding> frameProvider;
+
++ (ASAccessibilityElement *)accessibilityElementWithContainer:(UIView *)container node:(ASDisplayNode *)node;
+
+@end
+
+@interface ASAccessibilityCustomAction : UIAccessibilityCustomAction
+
+@property (nonatomic) ASDisplayNode *node;
+@property (nonatomic) id value;
+@property (nonatomic, assign) NSRange textRange;
+
+@end
