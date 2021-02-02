@@ -522,7 +522,6 @@ dispatch_semaphore_signal(_lock);
     count ? [[NSDictionary alloc] initWithObjects:objects forKeys:keys count:count] : nil;
   });
 
-  
   /*
    * Framesetter cache.
    * Framesetters can only be used by one thread at a time.
@@ -624,7 +623,6 @@ dispatch_semaphore_signal(_lock);
     CGPoint position;
     position.x = cgPathBox.origin.x + ctLineOrigin.x;
     position.y = cgPathBox.size.height + cgPathBox.origin.y - ctLineOrigin.y;
-    
     ASTextLine *line = [ASTextLine lineWithCTLine:ctLine position:position vertical:isVerticalForm];
     
     [lines addObject:line];
@@ -773,7 +771,7 @@ dispatch_semaphore_signal(_lock);
         } else if (container.truncationType == ASTextTruncationTypeMiddle) {
           type = kCTLineTruncationMiddle;
         }
-        
+
         CTLineRef truncationTokenLine = NULL;
         truncationToken = container.truncationToken;
         // For Tail truncation, if the truncation token is empty or only whitespace, we simply take
@@ -792,12 +790,13 @@ dispatch_semaphore_signal(_lock);
           CFArrayRef runs = CTLineGetGlyphRuns(lastLine.CTLine);
           NSUInteger runCount = CFArrayGetCount(runs);
           NSMutableAttributedString *string =
-                        [[NSMutableAttributedString alloc] initWithString:ASTextTruncationToken];
+              [[NSMutableAttributedString alloc] initWithString:ASTextTruncationToken];
           NSMutableDictionary *attrs = nil;
           if (runCount > 0) {
+
             // Get last line run
             CTRunRef run = (CTRunRef)CFArrayGetValueAtIndex(runs, runCount - 1);
-            
+
             // Attributes from last run
             attrs = (id)CTRunGetAttributes(run);
             attrs = attrs ? [attrs mutableCopy] : [[NSMutableDictionary alloc] init];
@@ -811,6 +810,7 @@ dispatch_semaphore_signal(_lock);
               [attrs removeObjectForKey:(id)kCTForegroundColorAttributeName];
             }
           }
+
           truncationToken = fillBaseAttributes(string, attrs);
           truncationTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)truncationToken);
         }

@@ -145,18 +145,16 @@ static NS_RETURNS_RETAINED ASTextLayout *ASTextNodeCompatibleLayoutWithContainer
   layoutCacheLock->lock();
 
   ASTextCacheValue *cacheValue = [textLayoutCache objectForKey:text];
-  
+
   // Disable the cache if the text has attachments, since caching attachment content is expensive.
   BOOL shouldCacheLayout = YES;
   if (cacheValue == nil) {
     shouldCacheLayout = ![text as_hasAttribute:ASTextAttachmentAttributeName];
     cacheValue = [[ASTextCacheValue alloc] init];
-    [textLayoutCache setObject:cacheValue forKey:[text copy]];
     if (shouldCacheLayout) {
       [textLayoutCache setObject:cacheValue forKey:[text copy]];
     }
   }
-
   // Lock the cache item for the rest of the method. Only after acquiring can we release the NSCache.
   AS::MutexLocker lock(cacheValue->_m);
   layoutCacheLock->unlock();
@@ -212,7 +210,7 @@ static NS_RETURNS_RETAINED ASTextLayout *ASTextNodeCompatibleLayoutWithContainer
   ASSignpostStart(MeasureText, cacheValue, "%@", [text.string substringToIndex:MIN(text.length, 10)]);
   ASTextLayout *layout = [ASTextLayout layoutWithContainer:container text:text];
   ASSignpostEnd(MeasureText, cacheValue, "");
-  
+
   // Store the result in the cache.
   {
     if (shouldCacheLayout) {
@@ -294,7 +292,6 @@ static NSArray *DefaultLinkAttributeNames() {
     // Disable user interaction for text node by default.
     self.userInteractionEnabled = NO;
     self.needsDisplayOnBoundsChange = YES;
-    
     _truncationMode = NSLineBreakByTruncatingTail;
     _textContainer.truncationType = ASTextTruncationTypeEnd;
     
@@ -648,7 +645,7 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
 #if AS_TEXTNODE2_RECORD_ATTRIBUTED_STRINGS
   [ASTextNode _registerAttributedText:_attributedText];
 #endif
-  
+
   if (self.isNodeLoaded) {
     // Invalidate the accessibility elements for self as well as for the first accessibility
     // container to requery the accessibility items for it
@@ -692,27 +689,30 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
 
   // Apply/Fix paragraph style if needed
   [attributedString enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, attributedString.length) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSParagraphStyle *style, NSRange range, BOOL * _Nonnull stop) {
+    // Only "left" and "justified" alignments are supported while calculating intrinsic size.
+    // Other alignments like "right", "center" and "natural" cause the size to be bigger than needed and thus should be ignored/overridden.
     const NSLineBreakMode previousMode = style ? style.lineBreakMode : NSLineBreakByWordWrapping;
     const BOOL applyTruncationMode = innerMode != previousMode;
     const BOOL useNaturalAlignment = (!style || style.alignment == NSTextAlignmentNatural);
     BOOL forceLeftAlignment = NO;
     if (kTextNode2ImprovedRTL) {
       forceLeftAlignment = (isForIntrinsicSize
-                            && (!style
-                                || (style.alignment != NSTextAlignmentLeft
-                                    && style.alignment != NSTextAlignmentJustified)));
+                                     && (!style
+                                         || (style.alignment != NSTextAlignmentLeft
+                                             && style.alignment != NSTextAlignmentJustified)));
     } else {
       forceLeftAlignment = (style != nil
-      && isForIntrinsicSize
-      && style.alignment != NSTextAlignmentLeft
-      && style.alignment != NSTextAlignmentLeft);
+                            && isForIntrinsicSize
+                            && style.alignment != NSTextAlignmentLeft
+                            && style.alignment != NSTextAlignmentLeft);
     }
     
     if (!applyTruncationMode && !forceLeftAlignment && !useNaturalAlignment) {
       return;
     }
     
-    NSMutableParagraphStyle *paragraphStyle = [style mutableCopy] ?: [[NSMutableParagraphStyle alloc] init];
+    NSMutableParagraphStyle *paragraphStyle =
+        [style mutableCopy] ?: [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineBreakMode = innerMode;
     
     if (forceLeftAlignment) {
@@ -821,11 +821,11 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
       [mutableText addAttributes:@{ NSForegroundColorAttributeName : tintColor } range:limit];
     }
   }
-
+  
   return @{
     @"container": copiedContainer,
     @"text": mutableText,
-    @"bgColor": bgColor
+    @"bgColor": self.backgroundColor
   };
 }
 
@@ -928,7 +928,7 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
   }
 
   NSRange visibleRange = layout.visibleRange;
-  
+
   // Make sure the touch area doesn't include the area of _truncationAttributedText when the text
   // is truncated.
   if (kTextNode2ShortenedVisibleRange && _truncationAttributedText != nil && [self isTruncated]) {
@@ -957,6 +957,7 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
     if (!range || !NSLocationInRange(range.start.offset, clampedRange)) {
       continue;
     }
+
     for (NSString *attributeName in _linkAttributeNames) {
       NSRange effectiveRange = NSMakeRange(0, 0);
       id value = [_attributedText attribute:attributeName atIndex:range.start.offset
@@ -999,7 +1000,7 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
       }
     }
   }
-  
+
   return nil;
 }
 
@@ -1014,10 +1015,8 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
     CFIndex stringIndexForPosition = CTLineGetStringIndexForPosition(truncatedCTLine, point);
     if (stringIndexForPosition != kCFNotFound) {
       CFIndex truncatedCTLineGlyphCount = CTLineGetGlyphCount(truncatedCTLine);
-      
       CTLineRef truncationTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)_truncationAttributedText);
       CFIndex truncationTokenLineGlyphCount = truncationTokenLine ? CTLineGetGlyphCount(truncationTokenLine) : 0;
-      
       if (truncationTokenLine) {
         CFRelease(truncationTokenLine);
       }
@@ -1056,6 +1055,9 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
         default:
           // For now, assume that a tap inside this text, but outside the text range is a tap on the
           // truncation token.
+          if (![layout textRangeAtPoint:point]) {
+            inAdditionalTruncationMessage = YES;
+          }
           break;
       }
     }
@@ -1117,7 +1119,7 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
 
 - (NSRange)highlightRange
 {
-  ASLockScopeSelf();
+  MutexLocker l(__instanceLock__);
 
   return _highlightRange;
 }
@@ -1324,7 +1326,7 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   ASDisplayNodeAssertMainThread();
-  MutexLocker l(__instanceLock__); // Protect usage of _passthroughNonlinkTouches and _alwaysHandleTruncationTokenTap ivars.
+  MutexLocker l(__instanceLock__); // Protect usage of ivars.
 
   if (!_passthroughNonlinkTouches) {
     return [super pointInside:point withEvent:event];
@@ -1339,11 +1341,9 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
                                                      range:&range
                              inAdditionalTruncationMessage:&inAdditionalTruncationMessage
                                            forHighlighting:YES];
-  
   if (_additionalTruncationMessageIsInteractive && inAdditionalTruncationMessage) {
     return YES;
   }
-  
   NSUInteger lastCharIndex = NSIntegerMax;
   BOOL linkCrossesVisibleRange = (lastCharIndex > range.location) && (lastCharIndex < NSMaxRange(range) - 1);
   
