@@ -292,6 +292,7 @@ static NSArray *DefaultLinkAttributeNames() {
     // Disable user interaction for text node by default.
     self.userInteractionEnabled = NO;
     self.needsDisplayOnBoundsChange = YES;
+
     _truncationMode = NSLineBreakByTruncatingTail;
     _textContainer.truncationType = ASTextTruncationTypeEnd;
     
@@ -704,17 +705,17 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
       forceLeftAlignment = (style != nil
                             && isForIntrinsicSize
                             && style.alignment != NSTextAlignmentLeft
-                            && style.alignment != NSTextAlignmentLeft);
+                            && style.alignment != NSTextAlignmentJustified);
     }
-    
+
     if (!applyTruncationMode && !forceLeftAlignment && !useNaturalAlignment) {
       return;
     }
-    
+
     NSMutableParagraphStyle *paragraphStyle =
         [style mutableCopy] ?: [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineBreakMode = innerMode;
-    
+
     if (forceLeftAlignment) {
       paragraphStyle.alignment = NSTextAlignmentLeft;
     } else if (useNaturalAlignment) {
@@ -1015,6 +1016,7 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
     CFIndex stringIndexForPosition = CTLineGetStringIndexForPosition(truncatedCTLine, point);
     if (stringIndexForPosition != kCFNotFound) {
       CFIndex truncatedCTLineGlyphCount = CTLineGetGlyphCount(truncatedCTLine);
+
       CTLineRef truncationTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)_truncationAttributedText);
       CFIndex truncationTokenLineGlyphCount = truncationTokenLine ? CTLineGetGlyphCount(truncationTokenLine) : 0;
       if (truncationTokenLine) {
@@ -1023,7 +1025,6 @@ static ASTextNodeFrameProvider *ASTextNode2ASTextNodeFrameProviderDefault() {
       
       CTLineRef additionalTruncationTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)_additionalTruncationMessage);
       CFIndex additionalTruncationTokenLineGlyphCount = additionalTruncationTokenLine ? CTLineGetGlyphCount(additionalTruncationTokenLine) : 0;
-      
       if (additionalTruncationTokenLine) {
         CFRelease(additionalTruncationTokenLine);
       }
@@ -1326,7 +1327,7 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   ASDisplayNodeAssertMainThread();
-  MutexLocker l(__instanceLock__); // Protect usage of ivars.
+  MutexLocker l(__instanceLock__);  // Protect usage of ivars.
 
   if (!_passthroughNonlinkTouches) {
     return [super pointInside:point withEvent:event];
@@ -1344,6 +1345,7 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
   if (_additionalTruncationMessageIsInteractive && inAdditionalTruncationMessage) {
     return YES;
   }
+
   NSUInteger lastCharIndex = NSIntegerMax;
   BOOL linkCrossesVisibleRange = (lastCharIndex > range.location) && (lastCharIndex < NSMaxRange(range) - 1);
   
